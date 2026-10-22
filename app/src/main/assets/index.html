@@ -1,28 +1,1231 @@
-<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>السيدة رزقي</title>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>السيدة رزقي</title>
+
 <style>
-:root{--brown:#3b2118;--gold:#e5b563;--cream:#fbf5e9;--muted:#806d5d}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--brown);font-family:Tahoma,Arial,sans-serif;padding-bottom:90px}header{background:var(--brown);color:var(--gold);padding:24px 20px 18px;text-align:center}header h1{margin:5px;font-size:29px}header p{font-size:12px;color:#ebd8b9}main{padding:18px;max-width:850px;margin:auto}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:14px;padding:12px;background:var(--brown);color:var(--cream)}input,textarea,select{width:100%;padding:13px;border:1px solid #ddceb7;border-radius:12px;background:#fffdf8;color:var(--brown);margin:7px 0}textarea{min-height:110px}nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--brown);padding:9px 3px max(9px,env(safe-area-inset-bottom));z-index:3}nav button{flex:1;font-size:12px;padding:8px 1px;color:#e9d5b4;border-radius:8px}nav button.active{color:var(--brown);background:var(--gold)}.hero{padding:22px;border-radius:22px;background:linear-gradient(120deg,#6e3b20,#28170f);color:#fff4dc;margin-bottom:18px}.hero h2{color:var(--gold)}.chips{display:flex;gap:8px;overflow:auto;padding:10px 0}.chips button{white-space:nowrap;background:#eadac0;color:var(--brown);font-size:12px}.chips .chosen{background:var(--brown);color:var(--gold)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{background:#fffdf8;border:1px solid #eadbc6;border-radius:18px;overflow:hidden;position:relative}.art{font-size:64px;text-align:center;background:linear-gradient(140deg,#e8c797,#9b663e);padding:22px}.info{padding:12px}.info h3{font-size:15px;margin:0 0 9px}.small{font-size:12px;color:var(--muted);line-height:1.8}.heart{position:absolute;top:8px;left:8px;background:#fff8e7;color:#7c352a;padding:8px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row button{flex:1}.panel{background:#fffdf8;padding:17px;border-radius:18px;margin:13px 0;border:1px solid #eadbc6}li{line-height:2;margin:8px 0}label{display:block;line-height:1.9}input[type=checkbox]{width:auto;margin-left:10px}.empty{text-align:center;padding:45px 12px;color:var(--muted)}.toast{position:fixed;bottom:85px;left:20px;right:20px;background:var(--brown);color:white;padding:16px;border-radius:14px;z-index:10;text-align:center}a{color:#855320}hr{border:0;border-top:1px solid #eadbc6}
-</style><header><div style="font-size:38px">♨</div><h1>السيدة رزقي</h1><p>وصفات من القلب · نكهات جزائرية</p></header><main id="main"></main><nav id="nav"></nav><script>
-const initial=[{"id": "1", "name": "كسكسي بالخضار", "category": "أطباق تقليدية", "emoji": "🥘", "time": 70, "servings": 6, "ingredients": ["500 غ كسكسي", "500 غ لحم", "2 جزر", "2 كوسة", "1 بصلة", "كوب حمص مطبوخ", "ملح وفلفل ورأس الحانوت", "ملعقتان زيت"], "steps": ["قلّبي البصل واللحم في الزيت مع التوابل.", "أضيفي الماء واتركي اللحم ينضج، ثم أضيفي الخضار والحمص.", "رطّبي الكسكسي وفوّريه مرتين أو ثلاثًا حسب نوعه.", "قدّمي الكسكسي مع اللحم والخضار والمرق."]}, {"id": "2", "name": "طاجين اللحم بالبرقوق", "category": "أطباق تقليدية", "emoji": "🍲", "time": 80, "servings": 4, "ingredients": ["600 غ لحم", "200 غ برقوق مجفف", "بصلة", "قرفة", "ملعقة عسل", "لوز للتزيين", "زيت وملح وفلفل"], "steps": ["قلّبي اللحم والبصل والتوابل.", "أضيفي الماء واطهي على نار هادئة حتى ينضج اللحم.", "اطهي البرقوق منفصلًا مع قليل من الماء والقرفة والعسل.", "قدّمي اللحم مع البرقوق واللوز."]}, {"id": "3", "name": "شوربة فريك", "category": "شوربات", "emoji": "🥣", "time": 50, "servings": 4, "ingredients": ["200 غ لحم", "نصف كوب فريك", "بصلة", "حبتا طماطم", "ملعقة معجون طماطم", "حمص مطبوخ", "كزبرة ونعناع", "ملح وفلفل وزيت"], "steps": ["قلّبي البصل واللحم وأضيفي الطماطم والتوابل.", "أضيفي الماء واتركي اللحم يطهى.", "اغسلي الفريك وأضيفيه مع الحمص.", "حرّكي حتى ينضج الفريك ثم أضيفي الأعشاب."]}, {"id": "4", "name": "بوراك بالبطاطا", "category": "مقبلات", "emoji": "🥟", "time": 35, "servings": 4, "ingredients": ["8 أوراق ديول", "3 بطاطا مطبوخة", "جبن", "بقدونس", "ملح وفلفل", "زيت"], "steps": ["اهرسي البطاطا مع الجبن والبقدونس والتوابل.", "وزّعي الحشو على أوراق الديول.", "اطوي الأطراف ولفّيها جيدًا.", "اقليها حتى تصبح ذهبية أو ادهنيها بالزيت واخبزيها."]}, {"id": "5", "name": "سلطة مشوية", "category": "سلطات", "emoji": "🥗", "time": 35, "servings": 4, "ingredients": ["3 فلفل", "3 طماطم", "فص ثوم", "زيت زيتون", "ملح وعصير ليمون"], "steps": ["اشوي الفلفل والطماطم.", "قشّري الخضار وقطّعيها.", "اخلطيها مع الثوم والزيت والملح والليمون."]}, {"id": "6", "name": "بسبوسة", "category": "حلويات", "emoji": "🍰", "time": 45, "servings": 8, "ingredients": ["كوبان سميد", "كوب لبن", "نصف كوب سكر", "نصف كوب زيت", "ملعقة صغيرة خميرة حلويات", "كوب شراب سكري محضّر"], "steps": ["اخلطي السميد والسكر والخميرة.", "أضيفي اللبن والزيت واخلطي دون مبالغة.", "وزّعي في قالب مدهون واخبزي عند 180 درجة حتى تتحمر.", "اسقي بالشراب واتركيها تتشرب قبل التقطيع."]}, {"id": "7", "name": "عصير البرتقال والجزر", "category": "مشروبات", "emoji": "🍊", "time": 15, "servings": 3, "ingredients": ["3 برتقال", "جزرتان مطبوختان ومبرّدتان", "ماء بارد حسب القوام"], "steps": ["اعصري البرتقال.", "اخلطي العصير مع الجزر والماء.", "قدّميه باردًا."]}, {"id": "8", "name": "محاجب", "category": "أطباق تقليدية", "emoji": "🫓", "time": 65, "servings": 6, "ingredients": ["500 غ سميد ناعم", "ماء وملح", "3 بصل", "حبتا طماطم", "زيت وفلفل"], "steps": ["اعجني السميد مع الملح والماء حتى تصبح العجينة مرنة واتركيها ترتاح.", "اطهي البصل والطماطم والتوابل حتى يجف الحشو ثم برّديه.", "افردي كرات العجين بالزيت وضعي الحشو واطويها مربعًا.", "اطهي على طاجين ساخن من الجهتين."]}];
-const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function read(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}}
-let recipes=read('rozqi-recipes',initial),favorites=read('rozqi-favorites',[]),shopping=read('rozqi-shopping',[]),page='home',category='الكل',query='',selected=null,step=0;
-function save(){localStorage.setItem('rozqi-recipes',JSON.stringify(recipes));localStorage.setItem('rozqi-favorites',JSON.stringify(favorites));localStorage.setItem('rozqi-shopping',JSON.stringify(shopping))}
-function toast(s){let e=document.createElement('div');e.className='toast';e.textContent=s;document.body.append(e);setTimeout(()=>e.remove(),2300)}
-function go(p){page=p;query='';category='الكل';render();window.scrollTo(0,0)}
-window.appBack=()=>{if(page!=='home')go('home');else toast('للخروج استخدمي زر الشاشة الرئيسية في الهاتف')};
-function nav(){const tabs=[['home','⌂ الرئيسية'],['favorites','♡ المفضلة'],['shopping','☷ مشترياتي'],['manage','⚙ وصفاتي']];$('#nav').innerHTML=tabs.map(([p,t])=>`<button data-go="${p}" class="${page===p?'active':''}">${t}</button>`).join('')}
-function cards(list){return list.length?'<div class="grid">'+list.map(r=>`<article class="card"><button class="heart" data-heart="${esc(r.id)}" aria-label="المفضلة">${favorites.includes(r.id)?'♥':'♡'}</button><div data-open="${esc(r.id)}" role="button" tabindex="0"><div class="art">${esc(r.emoji||'🍽️')}</div><div class="info"><h3>${esc(r.name)}</h3><div class="small">◷ ${esc(r.time)} دقيقة · ${esc(r.servings)} أشخاص</div></div></div></article>`).join('')+'</div>':'<div class="empty">لا توجد وصفات هنا بعد.</div>'}
-function list(){let arr=page==='favorites'?recipes.filter(r=>favorites.includes(r.id)):recipes;arr=arr.filter(r=>(category==='الكل'||r.category===category)&&r.name.includes(query));$('#results').innerHTML=cards(arr)}
-function render(){nav();const m=$('#main');if(page==='home'||page==='favorites'){m.innerHTML=(page==='home'?'<section class="hero"><span>مطبخكِ اليومي</span><h2>كل وصفة حكاية لذيذة</h2><p>أطباق تقليدية وحلويات سهلة في مكان واحد.</p></section>':'<h2>وصفاتي المفضلة</h2>')+'<input id="search" aria-label="البحث" placeholder="ابحثي عن وصفة…"><div class="chips">'+['الكل',...new Set(recipes.map(r=>r.category))].map(c=>`<button data-cat="${esc(c)}" class="${category===c?'chosen':''}">${esc(c)}</button>`).join('')+'</div><section id="results"></section>';list();$('#search').oninput=e=>{query=e.target.value;list()};}
-else if(page==='detail'){const r=recipes.find(r=>r.id===selected);if(!r){go('home');return}m.innerHTML=`<button data-go="home">← الرئيسية</button><div class="panel"><div class="art">${esc(r.emoji)}</div><h2>${esc(r.name)}</h2><p class="small">${esc(r.category)} · ${esc(r.time)} دقيقة · ${esc(r.servings)} أشخاص</p><div class="row"><button data-heart="${esc(r.id)}">${favorites.includes(r.id)?'♥ محفوظة':'♡ حفظ'}</button><button id="addShopping">+ المشتريات</button></div></div><section class="panel"><h3>المكونات</h3><ul>${r.ingredients.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section><section class="panel"><h3>طريقة التحضير</h3><ol>${r.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><button id="cook">ابدئي التحضير خطوة بخطوة</button></section>`;$('#addShopping').onclick=()=>{r.ingredients.forEach(t=>{if(!shopping.some(x=>x.text===t))shopping.push({text:t,done:false})});save();toast('أضيفت المكونات إلى مشترياتك')};$('#cook').onclick=()=>{step=0;page='cook';render()}}
-else if(page==='cook'){const r=recipes.find(r=>r.id===selected);m.innerHTML=`<h2>${esc(r.name)}</h2><section class="panel"><p class="small">الخطوة ${step+1} من ${r.steps.length}</p><h3 style="line-height:2">${esc(r.steps[step])}</h3><div class="row"><button id="prev" ${step===0?'disabled':''}>السابقة</button><button id="next">${step===r.steps.length-1?'إنهاء التحضير ✓':'التالية'}</button></div></section><button id="backDetail">كل الخطوات</button>`;$('#prev').onclick=()=>{step=Math.max(0,step-1);render()};$('#next').onclick=()=>{if(step<r.steps.length-1){step++;render()}else{page='detail';render();toast('بالصحة والهناء!')}};$('#backDetail').onclick=()=>{page='detail';render()}}
-else if(page==='shopping'){m.innerHTML='<h2>قائمة المشتريات</h2><form id="shopForm" class="row"><input id="shopText" required maxlength="200" placeholder="أضيفي مكوّنًا"><button>إضافة</button></form><div class="panel">'+(shopping.map((x,i)=>`<div class="row"><label style="flex:1;${x.done?'text-decoration:line-through':''}"><input type="checkbox" data-check="${i}" ${x.done?'checked':''}>${esc(x.text)}</label><button data-remove="${i}" aria-label="حذف">×</button></div>`).join('')||'<p>أضيفي مكونات أي وصفة أو اكتبيها هنا.</p>')+'</div><button id="clearDone">حذف المشتريات المكتملة</button>';$('#shopForm').onsubmit=e=>{e.preventDefault();let t=$('#shopText').value.trim();if(t){shopping.push({text:t,done:false});save();render()}};$('#clearDone').onclick=()=>{shopping=shopping.filter(x=>!x.done);save();render()}}
-else if(page==='manage'){m.innerHTML='<h2>مطبخي الخاص</h2><p class="small">التعديلات محفوظة على هذا الهاتف فقط. ليست هذه لوحة أدمن سحابية. احفظي نسخة احتياطية قبل حذف التطبيق.</p><div class="row"><button id="newRecipe">+ وصفة جديدة</button><button id="backup">نسخة احتياطية</button><button id="restore">استعادة نسخة</button></div><textarea id="backupText" placeholder="ستظهر النسخة هنا. انسخيها إلى ملف أو ملاحظة، أو الصقي نسخة لاستعادتها."></textarea><div class="panel">'+recipes.map(r=>`<div class="row" style="margin-bottom:12px"><span style="flex:1">${esc(r.emoji)} ${esc(r.name)}</span><button data-edit="${esc(r.id)}">تعديل</button><button data-delete="${esc(r.id)}">حذف</button></div>`).join('')+'</div><p class="small">عن التطبيق: السيدة رزقي، إصدار 1.0. الوصفات الأولية أمثلة قابلة للتعديل. الأوقات تقريبية. راعي الحساسية الغذائية وتأكدي من نضج الطعام. لا يجمع التطبيق حسابات أو بيانات عبر خادم.</p>';$('#newRecipe').onclick=()=>edit(null);$('#backup').onclick=()=>{$('#backupText').value=JSON.stringify({recipes,favorites,shopping});$('#backupText').select();toast('انسخي النص واحفظيه في مكان آمن')};$('#restore').onclick=()=>{try{const b=JSON.parse($('#backupText').value);if(!Array.isArray(b.recipes)||b.recipes.length>500||!b.recipes.every(r=>typeof r.id==='string'&&typeof r.name==='string'&&typeof r.category==='string'&&Array.isArray(r.ingredients)&&r.ingredients.every(x=>typeof x==='string')&&Array.isArray(r.steps)&&r.steps.length&&r.steps.every(x=>typeof x==='string')))throw Error();if(!confirm('استبدال الوصفات الحالية بالنسخة؟'))return;recipes=b.recipes;favorites=Array.isArray(b.favorites)?b.favorites.filter(x=>typeof x==='string'):[];shopping=Array.isArray(b.shopping)?b.shopping.filter(x=>x&&typeof x.text==='string').map(x=>({text:x.text,done:!!x.done})):[];save();render();toast('تمت الاستعادة')}catch(e){toast('النسخة غير صالحة')}}}
+:root {
+  --brown: #3b2118;
+  --gold: #e5b563;
+  --cream: #fbf5e9;
+  --muted: #806d5d;
 }
-function edit(id){const r=recipes.find(x=>x.id===id)||{name:'',category:'أطباق تقليدية',emoji:'🍽️',time:30,servings:4,ingredients:[],steps:[]};page='edit';nav();$('#main').innerHTML=`<h2>${id?'تعديل وصفة':'وصفة جديدة'}</h2><form id="recipeForm"><label>اسم الوصفة<input name="name" required maxlength="100" value="${esc(r.name)}"></label><label>التصنيف<input name="category" required maxlength="60" value="${esc(r.category)}"></label><label>رمز الطبق<input name="emoji" maxlength="12" value="${esc(r.emoji)}"></label><label>المدة بالدقائق<input name="time" type="number" min="1" max="1440" required value="${esc(r.time)}"></label><label>عدد الأشخاص<input name="servings" type="number" min="1" max="100" required value="${esc(r.servings)}"></label><label>المكونات: كل مكوّن في سطر<textarea name="ingredients" required>${esc(r.ingredients.join('
-'))}</textarea></label><label>الخطوات: كل خطوة في سطر<textarea name="steps" required>${esc(r.steps.join('
-'))}</textarea></label><div class="row"><button>حفظ الوصفة</button><button type="button" data-go="manage">إلغاء</button></div></form>`;$('#recipeForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),split=k=>f.get(k).split('
-').map(x=>x.trim()).filter(Boolean);let v={id:id||'local-'+Date.now(),name:f.get('name').trim(),category:f.get('category').trim(),emoji:f.get('emoji')||'🍽️',time:Number(f.get('time')),servings:Number(f.get('servings')),ingredients:split('ingredients'),steps:split('steps')};if(!v.name||!v.category||!v.ingredients.length||!v.steps.length){toast('أكملي جميع الحقول');return}if(id)recipes=recipes.map(x=>x.id===id?v:x);else recipes.unshift(v);save();go('manage');toast('حُفظت الوصفة')};}
-document.addEventListener('click',e=>{let b=e.target.closest('[data-go],[data-open],[data-heart],[data-cat],[data-remove],[data-edit],[data-delete]');if(!b)return;const d=b.dataset;if(d.go)go(d.go);else if(d.open){selected=d.open;page='detail';render();window.scrollTo(0,0)}else if(d.heart){favorites=favorites.includes(d.heart)?favorites.filter(x=>x!==d.heart):[...favorites,d.heart];save();if(page==='home'||page==='favorites')list();else render()}else if(d.cat){category=d.cat;document.querySelectorAll('[data-cat]').forEach(x=>x.classList.toggle('chosen',x.dataset.cat===category));list()}else if(d.remove!==undefined){shopping.splice(Number(d.remove),1);save();render()}else if(d.edit)edit(d.edit);else if(d.delete&&confirm('حذف هذه الوصفة؟')){recipes=recipes.filter(x=>x.id!==d.delete);favorites=favorites.filter(x=>x!==d.delete);save();render()}});
-document.addEventListener('change',e=>{if(e.target.dataset.check!==undefined){shopping[Number(e.target.dataset.check)].done=e.target.checked;save();render()}});render();
-</script></html>
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding-bottom: 100px;
+  background: var(--cream);
+  color: var(--brown);
+  font-family: Tahoma, Arial, sans-serif;
+}
+
+header {
+  padding: 22px 15px;
+  background: var(--brown);
+  color: var(--gold);
+  text-align: center;
+}
+
+header h1 { margin: 8px 0; font-size: 28px; }
+header p { color: #ebd8b9; font-size: 12px; }
+
+main {
+  max-width: 850px;
+  margin: auto;
+  padding: 16px;
+}
+
+button, input, textarea { font: inherit; }
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--brown);
+  color: var(--cream);
+  cursor: pointer;
+}
+
+button:disabled { opacity: .4; }
+
+input, textarea {
+  width: 100%;
+  display: block;
+  padding: 13px;
+  margin: 8px 0 15px;
+  border: 1px solid #ddceb7;
+  border-radius: 12px;
+  background: #fffdf8;
+  color: var(--brown);
+}
+
+textarea { min-height: 120px; }
+label { display: block; line-height: 1.9; }
+
+nav {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  gap: 3px;
+  padding: 9px 4px;
+  background: var(--brown);
+  z-index: 5;
+}
+
+nav button {
+  flex: 1;
+  padding: 11px 2px;
+  font-size: 12px;
+  color: var(--gold);
+}
+
+nav button.active {
+  background: var(--gold);
+  color: var(--brown);
+}
+
+.hero {
+  padding: 22px;
+  margin-bottom: 18px;
+  border-radius: 20px;
+  background: linear-gradient(120deg, #704223, #28170f);
+  color: #fff4dc;
+}
+
+.hero h2 { color: var(--gold); }
+
+.chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0 15px;
+}
+
+.chips button {
+  white-space: nowrap;
+  background: #eadac0;
+  color: var(--brown);
+  font-size: 12px;
+}
+
+.chips button.chosen {
+  background: var(--brown);
+  color: var(--gold);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #eadbc6;
+  border-radius: 18px;
+  background: #fffdf8;
+}
+
+.art {
+  padding: 24px;
+  background: linear-gradient(140deg, #e8c797, #9b663e);
+  font-size: 62px;
+  text-align: center;
+}
+
+.info { padding: 12px; }
+.info h3 { margin: 0 0 8px; font-size: 15px; }
+
+.small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.heart {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 8px 11px;
+  background: #fff8e7;
+  color: #873b30;
+}
+
+.panel {
+  padding: 17px;
+  margin: 14px 0;
+  border: 1px solid #eadbc6;
+  border-radius: 18px;
+  background: #fffdf8;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.row button { flex: 1; }
+
+li {
+  margin: 8px 0;
+  line-height: 2;
+}
+
+.empty {
+  padding: 35px 10px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.shop-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.shop-row label { flex: 1; }
+
+.shop-row input {
+  display: inline;
+  width: auto;
+  margin: 0 0 0 8px;
+}
+
+.shop-row.done label {
+  text-decoration: line-through;
+  opacity: .6;
+}
+
+.toast {
+  position: fixed;
+  bottom: 85px;
+  right: 15px;
+  left: 15px;
+  padding: 15px;
+  border-radius: 12px;
+  background: var(--brown);
+  color: white;
+  text-align: center;
+  z-index: 10;
+}
+
+#errorBox {
+  margin: 12px;
+  padding: 15px;
+  border: 1px solid #bb5555;
+  border-radius: 12px;
+  background: #fff0ed;
+  color: #7c2020;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 650px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div style="font-size:38px">♨</div>
+  <h1>السيدة رزقي</h1>
+  <p>وصفات من القلب · نكهات جزائرية</p>
+</header>
+
+<div id="errorBox" hidden></div>
+
+<main id="main">
+  <p class="empty">جارٍ تحميل الوصفات...</p>
+</main>
+
+<nav id="nav"></nav>
+
+<noscript>
+  يجب تفعيل JavaScript داخل التطبيق لعرض الوصفات.
+</noscript>
+
+<script>
+window.addEventListener("error", function (event) {
+  var box = document.getElementById("errorBox");
+  if (!box) return;
+
+  box.hidden = false;
+  box.textContent =
+    "خطأ في الواجهة: " + event.message +
+    " | السطر: " + event.lineno;
+});
+</script>
+
+<script>
+"use strict";
+
+const NL = String.fromCharCode(10);
+
+const initial = [
+  {
+    id: "1",
+    name: "كسكسي بالخضار",
+    category: "أطباق تقليدية",
+    emoji: "🥘",
+    time: 70,
+    servings: 6,
+    ingredients: [
+      "500 غ كسكسي",
+      "500 غ لحم",
+      "2 جزر",
+      "2 كوسة",
+      "بصلة",
+      "كوب حمص مطبوخ",
+      "ملح وفلفل ورأس الحانوت",
+      "ملعقتان زيت"
+    ],
+    steps: [
+      "قلّبي البصل واللحم في الزيت مع التوابل.",
+      "أضيفي الماء واتركي اللحم ينضج ثم أضيفي الخضار والحمص.",
+      "رطّبي الكسكسي وفوّريه حسب نوعه.",
+      "قدّمي الكسكسي مع اللحم والخضار والمرق."
+    ]
+  },
+  {
+    id: "2",
+    name: "طاجين اللحم بالبرقوق",
+    category: "أطباق تقليدية",
+    emoji: "🍲",
+    time: 80,
+    servings: 4,
+    ingredients: [
+      "600 غ لحم",
+      "200 غ برقوق مجفف",
+      "بصلة",
+      "قرفة",
+      "ملعقة عسل",
+      "لوز للتزيين",
+      "زيت وملح وفلفل"
+    ],
+    steps: [
+      "قلّبي اللحم والبصل والتوابل في الزيت.",
+      "أضيفي الماء واطهي حتى ينضج اللحم.",
+      "اطهي البرقوق منفصلًا مع الماء والقرفة والعسل.",
+      "قدّمي اللحم مع البرقوق واللوز."
+    ]
+  },
+  {
+    id: "3",
+    name: "شوربة فريك",
+    category: "شوربات",
+    emoji: "🥣",
+    time: 50,
+    servings: 4,
+    ingredients: [
+      "200 غ لحم",
+      "نصف كوب فريك",
+      "بصلة",
+      "حبتا طماطم",
+      "ملعقة معجون طماطم",
+      "حمص مطبوخ",
+      "كزبرة ونعناع",
+      "ملح وفلفل وزيت"
+    ],
+    steps: [
+      "قلّبي البصل واللحم وأضيفي الطماطم والتوابل.",
+      "أضيفي الماء واتركي اللحم يطهى.",
+      "أضيفي الفريك المغسول والحمص.",
+      "حرّكي حتى ينضج الفريك ثم أضيفي الأعشاب."
+    ]
+  },
+  {
+    id: "4",
+    name: "بوراك بالبطاطا",
+    category: "مقبلات",
+    emoji: "🥟",
+    time: 35,
+    servings: 4,
+    ingredients: [
+      "8 أوراق ديول",
+      "3 بطاطا مطبوخة",
+      "جبن",
+      "بقدونس",
+      "ملح وفلفل",
+      "زيت"
+    ],
+    steps: [
+      "اهرسي البطاطا مع الجبن والبقدونس والتوابل.",
+      "وزّعي الحشو على أوراق الديول.",
+      "اطوي الأطراف ولفّيها جيدًا.",
+      "اقلي حتى تصبح ذهبية أو ادهنيها بالزيت واخبزيها."
+    ]
+  },
+  {
+    id: "5",
+    name: "سلطة مشوية",
+    category: "سلطات",
+    emoji: "🥗",
+    time: 35,
+    servings: 4,
+    ingredients: [
+      "3 فلفل",
+      "3 طماطم",
+      "فص ثوم",
+      "زيت زيتون",
+      "ملح وعصير ليمون"
+    ],
+    steps: [
+      "اشوي الفلفل والطماطم.",
+      "قشّري الخضار وقطّعيها.",
+      "اخلطيها مع الثوم والزيت والملح والليمون."
+    ]
+  },
+  {
+    id: "6",
+    name: "بسبوسة",
+    category: "حلويات",
+    emoji: "🍰",
+    time: 45,
+    servings: 8,
+    ingredients: [
+      "كوبان سميد",
+      "كوب لبن",
+      "نصف كوب سكر",
+      "نصف كوب زيت",
+      "ملعقة صغيرة خميرة حلويات",
+      "كوب شراب سكري محضّر"
+    ],
+    steps: [
+      "اخلطي السميد والسكر والخميرة.",
+      "أضيفي اللبن والزيت واخلطي.",
+      "اخبزي في قالب مدهون عند 180 درجة حتى تتحمر.",
+      "اسقي بالشراب واتركيها تتشرب قبل التقطيع."
+    ]
+  },
+  {
+    id: "7",
+    name: "عصير البرتقال والجزر",
+    category: "مشروبات",
+    emoji: "🍊",
+    time: 15,
+    servings: 3,
+    ingredients: [
+      "3 برتقال",
+      "جزرتان مطبوختان ومبرّدتان",
+      "ماء بارد حسب القوام"
+    ],
+    steps: [
+      "اعصري البرتقال.",
+      "اخلطي العصير مع الجزر والماء.",
+      "قدّميه باردًا."
+    ]
+  },
+  {
+    id: "8",
+    name: "محاجب",
+    category: "أطباق تقليدية",
+    emoji: "🫓",
+    time: 65,
+    servings: 6,
+    ingredients: [
+      "500 غ سميد ناعم",
+      "ماء وملح",
+      "3 بصل",
+      "حبتا طماطم",
+      "زيت وفلفل"
+    ],
+    steps: [
+      "اعجني السميد مع الملح والماء واتركي العجينة ترتاح.",
+      "اطهي البصل والطماطم والتوابل حتى يجف الحشو ثم برّديه.",
+      "افردي العجين بالزيت وضعي الحشو واطويه مربعًا.",
+      "اطهي على طاجين ساخن من الجهتين."
+    ]
+  }
+];
+
+function $(selector) {
+  return document.querySelector(selector);
+}
+
+function esc(value) {
+  return String(value == null ? "" : value)
+    .replace(/[&<>"']/g, function (character) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[character];
+    });
+}
+
+function read(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key));
+    return value == null ? fallback : value;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function validRecipe(recipe) {
+  return recipe &&
+    typeof recipe.id === "string" &&
+    typeof recipe.name === "string" &&
+    typeof recipe.category === "string" &&
+    Array.isArray(recipe.ingredients) &&
+    recipe.ingredients.every(function (text) {
+      return typeof text === "string";
+    }) &&
+    Array.isArray(recipe.steps) &&
+    recipe.steps.length > 0 &&
+    recipe.steps.every(function (text) {
+      return typeof text === "string";
+    });
+}
+
+let recipes = read("rozqi-recipes", initial);
+let favorites = read("rozqi-favorites", []);
+let shopping = read("rozqi-shopping", []);
+
+if (!Array.isArray(recipes) || !recipes.every(validRecipe)) {
+  recipes = initial;
+}
+
+if (!Array.isArray(favorites)) favorites = [];
+
+favorites = favorites.filter(function (id) {
+  return typeof id === "string";
+});
+
+if (!Array.isArray(shopping)) shopping = [];
+
+shopping = shopping.filter(function (item) {
+  return item && typeof item.text === "string";
+}).map(function (item) {
+  return {
+    text: item.text,
+    done: Boolean(item.done)
+  };
+});
+
+let page = "home";
+let category = "الكل";
+let query = "";
+let selected = null;
+let step = 0;
+
+function toast(message) {
+  const element = document.createElement("div");
+  element.className = "toast";
+  element.textContent = message;
+  document.body.appendChild(element);
+
+  setTimeout(function () {
+    element.remove();
+  }, 2500);
+}
+
+function save() {
+  try {
+    localStorage.setItem("rozqi-recipes", JSON.stringify(recipes));
+    localStorage.setItem("rozqi-favorites", JSON.stringify(favorites));
+    localStorage.setItem("rozqi-shopping", JSON.stringify(shopping));
+    return true;
+  } catch (error) {
+    toast("تعذر الحفظ الدائم. احفظي نسخة احتياطية.");
+    return false;
+  }
+}
+
+function go(destination) {
+  page = destination;
+  category = "الكل";
+  query = "";
+  render();
+  window.scrollTo(0, 0);
+}
+
+window.appBack = function () {
+  if (page === "cook") {
+    page = "detail";
+    render();
+  } else if (page !== "home") {
+    go("home");
+  } else {
+    toast("للخروج استخدمي زر الشاشة الرئيسية في الهاتف");
+  }
+};
+
+function renderNav() {
+  const tabs = [
+    ["home", "⌂ الرئيسية"],
+    ["favorites", "♡ المفضلة"],
+    ["shopping", "☷ مشترياتي"],
+    ["manage", "⚙ وصفاتي"]
+  ];
+
+  $("#nav").innerHTML = tabs.map(function (tab) {
+    return `
+      <button
+        data-go="${tab[0]}"
+        class="${page === tab[0] ? "active" : ""}">
+        ${tab[1]}
+      </button>
+    `;
+  }).join("");
+}
+
+function cards(items) {
+  if (!items.length) {
+    return '<p class="empty">لا توجد وصفات هنا بعد.</p>';
+  }
+
+  return '<div class="grid">' + items.map(function (recipe) {
+    return `
+      <article class="card">
+        <button
+          class="heart"
+          data-heart="${esc(recipe.id)}"
+          aria-label="المفضلة">
+          ${favorites.includes(recipe.id) ? "♥" : "♡"}
+        </button>
+
+        <div
+          data-open="${esc(recipe.id)}"
+          role="button"
+          tabindex="0">
+          <div class="art">${esc(recipe.emoji || "🍽️")}</div>
+          <div class="info">
+            <h3>${esc(recipe.name)}</h3>
+            <div class="small">
+              ${esc(recipe.time)} دقيقة ·
+              ${esc(recipe.servings)} أشخاص
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("") + "</div>";
+}
+
+function updateList() {
+  const items = recipes.filter(function (recipe) {
+    return (
+      (page !== "favorites" || favorites.includes(recipe.id)) &&
+      (category === "الكل" || recipe.category === category) &&
+      recipe.name.includes(query)
+    );
+  });
+
+  $("#results").innerHTML = cards(items);
+}
+
+function renderHome() {
+  const categories = ["الكل"];
+
+  recipes.forEach(function (recipe) {
+    if (!categories.includes(recipe.category)) {
+      categories.push(recipe.category);
+    }
+  });
+
+  $("#main").innerHTML = `
+    ${page === "home" ? `
+      <section class="hero">
+        <span>مطبخكِ اليومي</span>
+        <h2>كل وصفة حكاية لذيذة</h2>
+        <p>أطباق تقليدية وحلويات سهلة في مكان واحد.</p>
+      </section>
+    ` : "<h2>وصفاتي المفضلة</h2>"}
+
+    <input
+      id="search"
+      aria-label="البحث"
+      placeholder="ابحثي عن وصفة…">
+
+    <div class="chips">
+      ${categories.map(function (item) {
+        return `
+          <button
+            data-cat="${esc(item)}"
+            class="${category === item ? "chosen" : ""}">
+            ${esc(item)}
+          </button>
+        `;
+      }).join("")}
+    </div>
+
+    <section id="results"></section>
+  `;
+
+  updateList();
+
+  $("#search").oninput = function (event) {
+    query = event.target.value.trim();
+    updateList();
+  };
+}
+
+function currentRecipe() {
+  return recipes.find(function (recipe) {
+    return recipe.id === selected;
+  });
+}
+
+function renderDetail() {
+  const recipe = currentRecipe();
+
+  if (!recipe) {
+    go("home");
+    return;
+  }
+
+  $("#main").innerHTML = `
+    <button data-go="home">← الرئيسية</button>
+
+    <section class="panel">
+      <div class="art">${esc(recipe.emoji || "🍽️")}</div>
+      <h2>${esc(recipe.name)}</h2>
+
+      <p class="small">
+        ${esc(recipe.category)} ·
+        ${esc(recipe.time)} دقيقة ·
+        ${esc(recipe.servings)} أشخاص
+      </p>
+
+      <div class="row">
+        <button data-heart="${esc(recipe.id)}">
+          ${favorites.includes(recipe.id) ? "♥ محفوظة" : "♡ حفظ"}
+        </button>
+        <button id="addShopping">+ المشتريات</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>المكونات</h3>
+      <ul>
+        ${recipe.ingredients.map(function (text) {
+          return "<li>" + esc(text) + "</li>";
+        }).join("")}
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h3>طريقة التحضير</h3>
+      <ol>
+        ${recipe.steps.map(function (text) {
+          return "<li>" + esc(text) + "</li>";
+        }).join("")}
+      </ol>
+      <button id="cook">ابدئي التحضير خطوة بخطوة</button>
+    </section>
+  `;
+
+  $("#addShopping").onclick = function () {
+    recipe.ingredients.forEach(function (text) {
+      const exists = shopping.some(function (item) {
+        return item.text === text;
+      });
+
+      if (!exists) {
+        shopping.push({ text: text, done: false });
+      }
+    });
+
+    if (save()) toast("أضيفت المكونات إلى مشترياتك");
+  };
+
+  $("#cook").onclick = function () {
+    step = 0;
+    page = "cook";
+    render();
+    window.scrollTo(0, 0);
+  };
+}
+
+function renderCook() {
+  const recipe = currentRecipe();
+
+  if (!recipe) {
+    go("home");
+    return;
+  }
+
+  step = Math.max(0, Math.min(step, recipe.steps.length - 1));
+
+  $("#main").innerHTML = `
+    <h2>${esc(recipe.name)}</h2>
+
+    <section class="panel">
+      <p class="small">
+        الخطوة ${step + 1} من ${recipe.steps.length}
+      </p>
+
+      <h3 style="line-height:2">${esc(recipe.steps[step])}</h3>
+
+      <div class="row">
+        <button id="prev" ${step === 0 ? "disabled" : ""}>
+          السابقة
+        </button>
+
+        <button id="next">
+          ${step === recipe.steps.length - 1 ?
+            "إنهاء التحضير ✓" : "التالية"}
+        </button>
+      </div>
+    </section>
+
+    <button id="backDetail">كل الخطوات</button>
+  `;
+
+  $("#prev").onclick = function () {
+    step--;
+    render();
+  };
+
+  $("#next").onclick = function () {
+    if (step < recipe.steps.length - 1) {
+      step++;
+      render();
+    } else {
+      page = "detail";
+      render();
+      toast("بالصحة والهناء!");
+    }
+  };
+
+  $("#backDetail").onclick = function () {
+    page = "detail";
+    render();
+  };
+}
+
+function renderShopping() {
+  $("#main").innerHTML = `
+    <h2>قائمة المشتريات</h2>
+
+    <form id="shopForm">
+      <input
+        id="shopText"
+        required
+        maxlength="200"
+        placeholder="أضيفي مكوّنًا">
+      <button type="submit">إضافة</button>
+    </form>
+
+    <section class="panel">
+      ${shopping.length ? shopping.map(function (item, index) {
+        return `
+          <div class="shop-row ${item.done ? "done" : ""}">
+            <label>
+              <input
+                type="checkbox"
+                data-check="${index}"
+                ${item.done ? "checked" : ""}>
+              ${esc(item.text)}
+            </label>
+
+            <button data-remove="${index}" aria-label="حذف">
+              ×
+            </button>
+          </div>
+        `;
+      }).join("") : "<p>أضيفي مكونات وصفة أو اكتبيها هنا.</p>"}
+    </section>
+
+    <button id="clearDone">حذف المشتريات المكتملة</button>
+  `;
+
+  $("#shopForm").onsubmit = function (event) {
+    event.preventDefault();
+
+    const text = $("#shopText").value.trim();
+    if (!text) return;
+
+    shopping.push({ text: text, done: false });
+    save();
+    render();
+  };
+
+  $("#clearDone").onclick = function () {
+    shopping = shopping.filter(function (item) {
+      return !item.done;
+    });
+
+    save();
+    render();
+  };
+}
+
+function renderManage() {
+  $("#main").innerHTML = `
+    <h2>مطبخي الخاص</h2>
+
+    <p class="small">
+      التعديلات محفوظة على هذا الهاتف فقط.
+      هذه ليست لوحة أدمن سحابية.
+      احفظي نسخة احتياطية قبل حذف التطبيق.
+    </p>
+
+    <div class="row">
+      <button id="newRecipe">+ وصفة جديدة</button>
+      <button id="backup">نسخة احتياطية</button>
+      <button id="restore">استعادة نسخة</button>
+    </div>
+
+    <textarea
+      id="backupText"
+      aria-label="النسخة الاحتياطية"
+      placeholder="انسخي النص لحفظه خارج التطبيق، أو الصقي نسخة لاستعادتها"></textarea>
+
+    <section class="panel">
+      ${recipes.map(function (recipe) {
+        return `
+          <div class="row" style="margin-bottom:12px">
+            <span style="flex:1">
+              ${esc(recipe.emoji || "🍽️")} ${esc(recipe.name)}
+            </span>
+            <button data-edit="${esc(recipe.id)}">تعديل</button>
+            <button data-delete="${esc(recipe.id)}">حذف</button>
+          </div>
+        `;
+      }).join("") || "<p>لم تضيفي وصفات بعد.</p>"}
+    </section>
+
+    <p class="small">
+      السيدة رزقي · نسخة محلية.
+      الوصفات الأولية أمثلة قابلة للتعديل والأوقات تقريبية.
+      راعي الحساسية الغذائية وتأكدي من نضج الطعام.
+    </p>
+  `;
+
+  $("#newRecipe").onclick = function () {
+    edit(null);
+  };
+
+  $("#backup").onclick = function () {
+    $("#backupText").value = JSON.stringify({
+      recipes: recipes,
+      favorites: favorites,
+      shopping: shopping
+    });
+
+    $("#backupText").focus();
+    $("#backupText").select();
+    toast("انسخي النص واحفظيه في ملاحظة آمنة");
+  };
+
+  $("#restore").onclick = function () {
+    let data;
+
+    try {
+      data = JSON.parse($("#backupText").value);
+
+      if (!data ||
+          !Array.isArray(data.recipes) ||
+          data.recipes.length > 500 ||
+          !data.recipes.every(validRecipe)) {
+        throw new Error("invalid backup");
+      }
+
+      const ids = data.recipes.map(function (recipe) {
+        return recipe.id;
+      });
+
+      if (new Set(ids).size !== ids.length) {
+        throw new Error("duplicate IDs");
+      }
+    } catch (error) {
+      toast("النسخة غير صالحة");
+      return;
+    }
+
+    if (!window.confirm("استبدال البيانات الحالية بهذه النسخة؟")) {
+      return;
+    }
+
+    recipes = data.recipes;
+
+    favorites = Array.isArray(data.favorites) ?
+      data.favorites.filter(function (id) {
+        return typeof id === "string";
+      }) : [];
+
+    shopping = Array.isArray(data.shopping) ?
+      data.shopping.filter(function (item) {
+        return item && typeof item.text === "string";
+      }).map(function (item) {
+        return {
+          text: item.text,
+          done: Boolean(item.done)
+        };
+      }) : [];
+
+    const persisted = save();
+    render();
+
+    if (persisted) toast("تمت الاستعادة");
+  };
+}
+
+function edit(id) {
+  const recipe = recipes.find(function (item) {
+    return item.id === id;
+  }) || {
+    name: "",
+    category: "أطباق تقليدية",
+    emoji: "🍽️",
+    time: 30,
+    servings: 4,
+    ingredients: [],
+    steps: []
+  };
+
+  page = "edit";
+  renderNav();
+
+  $("#main").innerHTML = `
+    <h2>${id ? "تعديل وصفة" : "وصفة جديدة"}</h2>
+
+    <form id="recipeForm">
+      <label>
+        اسم الوصفة
+        <input
+          name="name"
+          required
+          maxlength="100"
+          value="${esc(recipe.name)}">
+      </label>
+
+      <label>
+        التصنيف
+        <input
+          name="category"
+          required
+          maxlength="60"
+          value="${esc(recipe.category)}">
+      </label>
+
+      <label>
+        رمز الطبق
+        <input
+          name="emoji"
+          maxlength="12"
+          value="${esc(recipe.emoji || "🍽️")}">
+      </label>
+
+      <label>
+        المدة بالدقائق
+        <input
+          name="time"
+          type="number"
+          min="1"
+          max="1440"
+          required
+          value="${esc(recipe.time)}">
+      </label>
+
+      <label>
+        عدد الأشخاص
+        <input
+          name="servings"
+          type="number"
+          min="1"
+          max="100"
+          required
+          value="${esc(recipe.servings)}">
+      </label>
+
+      <label>
+        المكونات: كل مكوّن في سطر
+        <textarea name="ingredients" required>${esc(
+          recipe.ingredients.join(NL)
+        )}</textarea>
+      </label>
+
+      <label>
+        الخطوات: كل خطوة في سطر
+        <textarea name="steps" required>${esc(
+          recipe.steps.join(NL)
+        )}</textarea>
+      </label>
+
+      <div class="row">
+        <button type="submit">حفظ الوصفة</button>
+        <button type="button" data-go="manage">إلغاء</button>
+      </div>
+    </form>
+  `;
+
+  $("#recipeForm").onsubmit = function (event) {
+    event.preventDefault();
+
+    const form = event.target;
+
+    function field(name) {
+      return form.elements.namedItem(name).value.trim();
+    }
+
+    function lines(name) {
+      return field(name).split(NL).map(function (text) {
+        return text.trim();
+      }).filter(function (text) {
+        return text.length > 0;
+      });
+    }
+
+    const value = {
+      id: id || "local-" + Date.now() + "-" +
+        Math.random().toString(36).slice(2, 8),
+      name: field("name"),
+      category: field("category"),
+      emoji: field("emoji") || "🍽️",
+      time: Number(field("time")),
+      servings: Number(field("servings")),
+      ingredients: lines("ingredients"),
+      steps: lines("steps")
+    };
+
+    if (!value.name ||
+        !value.category ||
+        !value.ingredients.length ||
+        !value.steps.length ||
+        !(value.time >= 1 && value.time <= 1440) ||
+        !(value.servings >= 1 && value.servings <= 100)) {
+      toast("أكملي جميع الحقول بقيم صحيحة");
+      return;
+    }
+
+    if (id) {
+      recipes = recipes.map(function (item) {
+        return item.id === id ? value : item;
+      });
+    } else {
+      recipes.unshift(value);
+    }
+
+    const persisted = save();
+    go("manage");
+
+    if (persisted) toast("حُفظت الوصفة");
+  };
+
+  window.scrollTo(0, 0);
+}
+
+function render() {
+  renderNav();
+
+  if (page === "home" || page === "favorites") {
+    renderHome();
+  } else if (page === "detail") {
+    renderDetail();
+  } else if (page === "cook") {
+    renderCook();
+  } else if (page === "shopping") {
+    renderShopping();
+  } else if (page === "manage") {
+    renderManage();
+  }
+}
+
+document.addEventListener("click", function (event) {
+  const button = event.target.closest(
+    "[data-go], [data-open], [data-heart], [data-cat], " +
+    "[data-remove], [data-edit], [data-delete]"
+  );
+
+  if (!button) return;
+
+  const data = button.dataset;
+
+  if (data.go) {
+    go(data.go);
+
+  } else if (data.open) {
+    selected = data.open;
+    page = "detail";
+    render();
+    window.scrollTo(0, 0);
+
+  } else if (data.heart) {
+    if (favorites.includes(data.heart)) {
+      favorites = favorites.filter(function (id) {
+        return id !== data.heart;
+      });
+    } else {
+      favorites.push(data.heart);
+    }
+
+    save();
+
+    if (page === "home" || page === "favorites") {
+      updateList();
+    } else {
+      render();
+    }
+
+  } else if (data.cat) {
+    category = data.cat;
+
+    document.querySelectorAll("[data-cat]").forEach(function (item) {
+      item.classList.toggle(
+        "chosen",
+        item.dataset.cat === category
+      );
+    });
+
+    updateList();
+
+  } else if (data.remove !== undefined) {
+    shopping.splice(Number(data.remove), 1);
+    save();
+    render();
+
+  } else if (data.edit) {
+    edit(data.edit);
+
+  } else if (data.delete) {
+    if (!window.confirm("حذف هذه الوصفة؟")) return;
+
+    recipes = recipes.filter(function (recipe) {
+      return recipe.id !== data.delete;
+    });
+
+    favorites = favorites.filter(function (id) {
+      return id !== data.delete;
+    });
+
+    save();
+    render();
+  }
+});
+
+document.addEventListener("change", function (event) {
+  const index = event.target.dataset.check;
+  if (index === undefined) return;
+
+  const item = shopping[Number(index)];
+  if (!item) return;
+
+  item.done = event.target.checked;
+  save();
+  render();
+});
+
+render();
+</script>
+
+</body>
+</html>
