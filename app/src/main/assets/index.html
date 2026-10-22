@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>السيدة رزقي</title>
 
 <style>
@@ -17,7 +17,7 @@
 
 body {
   margin: 0;
-  padding-bottom: 100px;
+  padding-bottom: 90px;
   background: var(--cream);
   color: var(--brown);
   font-family: Tahoma, Arial, sans-serif;
@@ -39,22 +39,25 @@ main {
   padding: 16px;
 }
 
-button, input, textarea { font: inherit; }
+button, input, textarea, select { font: inherit; }
 
-button {
+button, .button {
+  display: inline-block;
   border: 0;
   border-radius: 12px;
   padding: 12px;
   background: var(--brown);
   color: var(--cream);
   cursor: pointer;
+  text-decoration: none;
+  text-align: center;
 }
 
-button:disabled { opacity: .4; }
+button:disabled { opacity: .5; cursor: wait; }
 
 input, textarea {
-  width: 100%;
   display: block;
+  width: 100%;
   padding: 13px;
   margin: 8px 0 15px;
   border: 1px solid #ddceb7;
@@ -63,8 +66,14 @@ input, textarea {
   color: var(--brown);
 }
 
-textarea { min-height: 120px; }
+textarea { min-height: 115px; }
 label { display: block; line-height: 1.9; }
+
+input[type="checkbox"] {
+  display: inline-block;
+  width: auto;
+  margin: 8px;
+}
 
 nav {
   position: fixed;
@@ -85,7 +94,7 @@ nav button {
   color: var(--gold);
 }
 
-nav button.active {
+nav .active {
   background: var(--gold);
   color: var(--brown);
 }
@@ -114,7 +123,7 @@ nav button.active {
   font-size: 12px;
 }
 
-.chips button.chosen {
+.chips .chosen {
   background: var(--brown);
   color: var(--gold);
 }
@@ -134,12 +143,21 @@ nav button.active {
 }
 
 .art {
-  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
   background: linear-gradient(140deg, #e8c797, #9b663e);
-  font-size: 62px;
-  text-align: center;
+  font-size: 60px;
 }
 
+.art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-art { height: 250px; }
 .info { padding: 12px; }
 .info h3 { margin: 0 0 8px; font-size: 15px; }
 
@@ -173,38 +191,35 @@ nav button.active {
   gap: 8px;
 }
 
-.row button { flex: 1; }
+.row > button, .row > .button { flex: 1; }
 
-li {
-  margin: 8px 0;
+li { margin: 8px 0; line-height: 2; }
+
+.empty {
+  padding: 30px 10px;
+  text-align: center;
+  color: var(--muted);
   line-height: 2;
 }
 
-.empty {
-  padding: 35px 10px;
-  text-align: center;
-  color: var(--muted);
+.error {
+  padding: 15px;
+  border-radius: 12px;
+  background: #ffe8e3;
+  color: #8a2424;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-.shop-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #eadac0;
+  font-size: 11px;
 }
 
-.shop-row label { flex: 1; }
-
-.shop-row input {
-  display: inline;
-  width: auto;
-  margin: 0 0 0 8px;
-}
-
-.shop-row.done label {
-  text-decoration: line-through;
-  opacity: .6;
-}
+.youtube { background: #b52424; }
 
 .toast {
   position: fixed;
@@ -217,17 +232,6 @@ li {
   color: white;
   text-align: center;
   z-index: 10;
-}
-
-#errorBox {
-  margin: 12px;
-  padding: 15px;
-  border: 1px solid #bb5555;
-  border-radius: 12px;
-  background: #fff0ed;
-  color: #7c2020;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
 }
 
 @media (min-width: 650px) {
@@ -246,211 +250,45 @@ li {
   <p>وصفات من القلب · نكهات جزائرية</p>
 </header>
 
-<div id="errorBox" hidden></div>
-
 <main id="main">
-  <p class="empty">جارٍ تحميل الوصفات...</p>
+  <p class="empty">جارٍ الاتصال بقاعدة البيانات...</p>
 </main>
 
 <nav id="nav"></nav>
 
-<noscript>
-  يجب تفعيل JavaScript داخل التطبيق لعرض الوصفات.
-</noscript>
-
 <script>
 window.addEventListener("error", function (event) {
-  var box = document.getElementById("errorBox");
-  if (!box) return;
-
-  box.hidden = false;
-  box.textContent =
-    "خطأ في الواجهة: " + event.message +
-    " | السطر: " + event.lineno;
+  var box = document.createElement("div");
+  box.className = "error";
+  box.textContent = "خطأ بالواجهة: " + event.message;
+  document.body.appendChild(box);
 });
 </script>
 
 <script>
 "use strict";
 
+/* إعدادات المشروع العامة، وليست مفاتيح إدارية سرية */
+const SUPABASE_URL =
+  "https://vyiywiteeqkyuroqftkn.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_4kzJ5yc7xLUPXBYoe2V0iQ_YyKEDiDp";
+
+const ADMIN_UID =
+  "e33bc325-89f7-49ab-afdb-17794b06fc7d";
+
 const NL = String.fromCharCode(10);
 
-const initial = [
-  {
-    id: "1",
-    name: "كسكسي بالخضار",
-    category: "أطباق تقليدية",
-    emoji: "🥘",
-    time: 70,
-    servings: 6,
-    ingredients: [
-      "500 غ كسكسي",
-      "500 غ لحم",
-      "2 جزر",
-      "2 كوسة",
-      "بصلة",
-      "كوب حمص مطبوخ",
-      "ملح وفلفل ورأس الحانوت",
-      "ملعقتان زيت"
-    ],
-    steps: [
-      "قلّبي البصل واللحم في الزيت مع التوابل.",
-      "أضيفي الماء واتركي اللحم ينضج ثم أضيفي الخضار والحمص.",
-      "رطّبي الكسكسي وفوّريه حسب نوعه.",
-      "قدّمي الكسكسي مع اللحم والخضار والمرق."
-    ]
-  },
-  {
-    id: "2",
-    name: "طاجين اللحم بالبرقوق",
-    category: "أطباق تقليدية",
-    emoji: "🍲",
-    time: 80,
-    servings: 4,
-    ingredients: [
-      "600 غ لحم",
-      "200 غ برقوق مجفف",
-      "بصلة",
-      "قرفة",
-      "ملعقة عسل",
-      "لوز للتزيين",
-      "زيت وملح وفلفل"
-    ],
-    steps: [
-      "قلّبي اللحم والبصل والتوابل في الزيت.",
-      "أضيفي الماء واطهي حتى ينضج اللحم.",
-      "اطهي البرقوق منفصلًا مع الماء والقرفة والعسل.",
-      "قدّمي اللحم مع البرقوق واللوز."
-    ]
-  },
-  {
-    id: "3",
-    name: "شوربة فريك",
-    category: "شوربات",
-    emoji: "🥣",
-    time: 50,
-    servings: 4,
-    ingredients: [
-      "200 غ لحم",
-      "نصف كوب فريك",
-      "بصلة",
-      "حبتا طماطم",
-      "ملعقة معجون طماطم",
-      "حمص مطبوخ",
-      "كزبرة ونعناع",
-      "ملح وفلفل وزيت"
-    ],
-    steps: [
-      "قلّبي البصل واللحم وأضيفي الطماطم والتوابل.",
-      "أضيفي الماء واتركي اللحم يطهى.",
-      "أضيفي الفريك المغسول والحمص.",
-      "حرّكي حتى ينضج الفريك ثم أضيفي الأعشاب."
-    ]
-  },
-  {
-    id: "4",
-    name: "بوراك بالبطاطا",
-    category: "مقبلات",
-    emoji: "🥟",
-    time: 35,
-    servings: 4,
-    ingredients: [
-      "8 أوراق ديول",
-      "3 بطاطا مطبوخة",
-      "جبن",
-      "بقدونس",
-      "ملح وفلفل",
-      "زيت"
-    ],
-    steps: [
-      "اهرسي البطاطا مع الجبن والبقدونس والتوابل.",
-      "وزّعي الحشو على أوراق الديول.",
-      "اطوي الأطراف ولفّيها جيدًا.",
-      "اقلي حتى تصبح ذهبية أو ادهنيها بالزيت واخبزيها."
-    ]
-  },
-  {
-    id: "5",
-    name: "سلطة مشوية",
-    category: "سلطات",
-    emoji: "🥗",
-    time: 35,
-    servings: 4,
-    ingredients: [
-      "3 فلفل",
-      "3 طماطم",
-      "فص ثوم",
-      "زيت زيتون",
-      "ملح وعصير ليمون"
-    ],
-    steps: [
-      "اشوي الفلفل والطماطم.",
-      "قشّري الخضار وقطّعيها.",
-      "اخلطيها مع الثوم والزيت والملح والليمون."
-    ]
-  },
-  {
-    id: "6",
-    name: "بسبوسة",
-    category: "حلويات",
-    emoji: "🍰",
-    time: 45,
-    servings: 8,
-    ingredients: [
-      "كوبان سميد",
-      "كوب لبن",
-      "نصف كوب سكر",
-      "نصف كوب زيت",
-      "ملعقة صغيرة خميرة حلويات",
-      "كوب شراب سكري محضّر"
-    ],
-    steps: [
-      "اخلطي السميد والسكر والخميرة.",
-      "أضيفي اللبن والزيت واخلطي.",
-      "اخبزي في قالب مدهون عند 180 درجة حتى تتحمر.",
-      "اسقي بالشراب واتركيها تتشرب قبل التقطيع."
-    ]
-  },
-  {
-    id: "7",
-    name: "عصير البرتقال والجزر",
-    category: "مشروبات",
-    emoji: "🍊",
-    time: 15,
-    servings: 3,
-    ingredients: [
-      "3 برتقال",
-      "جزرتان مطبوختان ومبرّدتان",
-      "ماء بارد حسب القوام"
-    ],
-    steps: [
-      "اعصري البرتقال.",
-      "اخلطي العصير مع الجزر والماء.",
-      "قدّميه باردًا."
-    ]
-  },
-  {
-    id: "8",
-    name: "محاجب",
-    category: "أطباق تقليدية",
-    emoji: "🫓",
-    time: 65,
-    servings: 6,
-    ingredients: [
-      "500 غ سميد ناعم",
-      "ماء وملح",
-      "3 بصل",
-      "حبتا طماطم",
-      "زيت وفلفل"
-    ],
-    steps: [
-      "اعجني السميد مع الملح والماء واتركي العجينة ترتاح.",
-      "اطهي البصل والطماطم والتوابل حتى يجف الحشو ثم برّديه.",
-      "افردي العجين بالزيت وضعي الحشو واطويه مربعًا.",
-      "اطهي على طاجين ساخن من الجهتين."
-    ]
-  }
-];
+let recipes = [];
+let page = "home";
+let selected = null;
+let category = "الكل";
+let query = "";
+let loading = false;
+let loadError = "";
+let refreshPromise = null;
+let editId = null;
 
 function $(selector) {
   return document.querySelector(selector);
@@ -469,7 +307,7 @@ function esc(value) {
     });
 }
 
-function read(key, fallback) {
+function readLocal(key, fallback) {
   try {
     const value = JSON.parse(localStorage.getItem(key));
     return value == null ? fallback : value;
@@ -478,29 +316,11 @@ function read(key, fallback) {
   }
 }
 
-function validRecipe(recipe) {
-  return recipe &&
-    typeof recipe.id === "string" &&
-    typeof recipe.name === "string" &&
-    typeof recipe.category === "string" &&
-    Array.isArray(recipe.ingredients) &&
-    recipe.ingredients.every(function (text) {
-      return typeof text === "string";
-    }) &&
-    Array.isArray(recipe.steps) &&
-    recipe.steps.length > 0 &&
-    recipe.steps.every(function (text) {
-      return typeof text === "string";
-    });
-}
+/* الجلسة في الذاكرة فقط:
+   يلزم تسجيل الدخول مجددًا بعد إعادة تشغيل التطبيق */
+let session = null;
 
-let recipes = read("rozqi-recipes", initial);
-let favorites = read("rozqi-favorites", []);
-let shopping = read("rozqi-shopping", []);
-
-if (!Array.isArray(recipes) || !recipes.every(validRecipe)) {
-  recipes = initial;
-}
+let favorites = readLocal("rozqi-cloud-favorites", []);
 
 if (!Array.isArray(favorites)) favorites = [];
 
@@ -508,71 +328,212 @@ favorites = favorites.filter(function (id) {
   return typeof id === "string";
 });
 
-if (!Array.isArray(shopping)) shopping = [];
-
-shopping = shopping.filter(function (item) {
-  return item && typeof item.text === "string";
-}).map(function (item) {
-  return {
-    text: item.text,
-    done: Boolean(item.done)
-  };
-});
-
-let page = "home";
-let category = "الكل";
-let query = "";
-let selected = null;
-let step = 0;
+function isAdmin() {
+  return Boolean(
+    session &&
+    session.user &&
+    session.user.id === ADMIN_UID
+  );
+}
 
 function toast(message) {
-  const element = document.createElement("div");
-  element.className = "toast";
-  element.textContent = message;
-  document.body.appendChild(element);
+  const box = document.createElement("div");
+  box.className = "toast";
+  box.textContent = message;
+  document.body.appendChild(box);
 
   setTimeout(function () {
-    element.remove();
-  }, 2500);
+    box.remove();
+  }, 3000);
 }
 
-function save() {
+function saveFavorites() {
   try {
-    localStorage.setItem("rozqi-recipes", JSON.stringify(recipes));
-    localStorage.setItem("rozqi-favorites", JSON.stringify(favorites));
-    localStorage.setItem("rozqi-shopping", JSON.stringify(shopping));
-    return true;
+    localStorage.setItem(
+      "rozqi-cloud-favorites",
+      JSON.stringify(favorites)
+    );
   } catch (error) {
-    toast("تعذر الحفظ الدائم. احفظي نسخة احتياطية.");
-    return false;
+    toast("تعذر حفظ المفضلة على الجهاز");
   }
 }
 
-function go(destination) {
-  page = destination;
-  category = "الكل";
-  query = "";
-  render();
-  window.scrollTo(0, 0);
+function safeHttps(value) {
+  if (!value) return "";
+
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:") return "";
+    if (url.username || url.password) return "";
+    return url.href;
+  } catch (error) {
+    return "";
+  }
 }
 
-window.appBack = function () {
-  if (page === "cook") {
-    page = "detail";
-    render();
-  } else if (page !== "home") {
-    go("home");
-  } else {
-    toast("للخروج استخدمي زر الشاشة الرئيسية في الهاتف");
+function youtubeUrl(value) {
+  const clean = safeHttps(value);
+  if (!clean) return "";
+
+  const url = new URL(clean);
+
+  const allowed = [
+    "youtube.com",
+    "www.youtube.com",
+    "m.youtube.com",
+    "youtu.be",
+    "www.youtube-nocookie.com"
+  ];
+
+  return allowed.includes(url.hostname.toLowerCase()) ?
+    clean : "";
+}
+
+async function rawRequest(path, options) {
+  const settings = options || {};
+  const controller = new AbortController();
+
+  const timer = setTimeout(function () {
+    controller.abort();
+  }, 25000);
+
+  try {
+    const response = await fetch(SUPABASE_URL + path, {
+      method: settings.method || "GET",
+      headers: Object.assign({
+        "apikey": SUPABASE_KEY,
+        "Content-Type": "application/json"
+      }, settings.headers || {}),
+      body: settings.body === undefined ?
+        undefined : JSON.stringify(settings.body),
+      signal: controller.signal
+    });
+
+    const text = await response.text();
+    let data = null;
+
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (error) {
+        data = { message: text };
+      }
+    }
+
+    if (!response.ok) {
+      const message = data && (
+        data.msg ||
+        data.message ||
+        data.error_description ||
+        data.error
+      );
+
+      const failure = new Error(
+        message || "فشل الطلب: " + response.status
+      );
+
+      failure.status = response.status;
+      throw failure;
+    }
+
+    return data;
+
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("انتهت مهلة الاتصال. تحققي من الإنترنت.");
+    }
+
+    if (error instanceof TypeError) {
+      throw new Error(
+        "تعذر الاتصال. تحققي من الإنترنت وإعدادات التطبيق."
+      );
+    }
+
+    throw error;
+
+  } finally {
+    clearTimeout(timer);
   }
-};
+}
+
+function setSession(data) {
+  session = {
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_at:
+      data.expires_at ||
+      Math.floor(Date.now() / 1000) + data.expires_in,
+    user: data.user || (session && session.user)
+  };
+}
+
+async function refreshSession() {
+  if (!session) return;
+
+  if (!refreshPromise) {
+    const token = session.refresh_token;
+
+    refreshPromise = rawRequest(
+      "/auth/v1/token?grant_type=refresh_token",
+      {
+        method: "POST",
+        body: { refresh_token: token }
+      }
+    ).then(function (data) {
+      setSession(data);
+    }).catch(function (error) {
+      if (error.status === 400 || error.status === 401) {
+        session = null;
+      }
+      throw error;
+    }).finally(function () {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+}
+
+async function api(path, options) {
+  const settings = options || {};
+
+  if (
+    session &&
+    session.expires_at <= Math.floor(Date.now() / 1000) + 60
+  ) {
+    await refreshSession();
+  }
+
+  function request() {
+    const headers = Object.assign({}, settings.headers || {});
+
+    if (session) {
+      headers.Authorization = "Bearer " + session.access_token;
+    }
+
+    return rawRequest(path, {
+      method: settings.method,
+      body: settings.body,
+      headers: headers
+    });
+  }
+
+  try {
+    return await request();
+  } catch (error) {
+    if (error.status === 401 && session) {
+      await refreshSession();
+      return request();
+    }
+    throw error;
+  }
+}
 
 function renderNav() {
   const tabs = [
     ["home", "⌂ الرئيسية"],
     ["favorites", "♡ المفضلة"],
-    ["shopping", "☷ مشترياتي"],
-    ["manage", "⚙ وصفاتي"]
+    ["admin", "⚙ الإدارة"]
   ];
 
   $("#nav").innerHTML = tabs.map(function (tab) {
@@ -584,6 +545,74 @@ function renderNav() {
       </button>
     `;
   }).join("");
+}
+
+function go(destination) {
+  page = destination;
+  category = "الكل";
+  query = "";
+  render();
+  window.scrollTo(0, 0);
+}
+
+window.appBack = function () {
+  if (page === "edit") {
+    go("admin");
+  } else if (page !== "home") {
+    go("home");
+  } else {
+    toast("للخروج استخدمي زر الشاشة الرئيسية في الهاتف");
+  }
+};
+
+async function loadRecipes() {
+  if (loading) return;
+
+  loading = true;
+  loadError = "";
+  render();
+
+  try {
+    let path =
+      "/rest/v1/recipes?select=*" +
+      "&order=featured.desc,created_at.desc" +
+      "&limit=500";
+
+    if (!isAdmin()) {
+      path += "&published=eq.true";
+    }
+
+    const data = await api(path);
+
+    if (!Array.isArray(data)) {
+      throw new Error("استجابة غير متوقعة من قاعدة البيانات");
+    }
+
+    recipes = data;
+
+  } catch (error) {
+    loadError = error.message;
+
+  } finally {
+    loading = false;
+    render();
+  }
+}
+
+function recipeArt(recipe, detail) {
+  const image = safeHttps(recipe.image_url);
+
+  return `
+    <div class="art ${detail ? "detail-art" : ""}">
+      ${image ?
+        `<img
+          src="${esc(image)}"
+          alt="${esc(recipe.name)}"
+          loading="lazy"
+          referrerpolicy="no-referrer">` :
+        esc(recipe.emoji || "🍽️")}
+    </div>
+  `;
 }
 
 function cards(items) {
@@ -601,11 +630,8 @@ function cards(items) {
           ${favorites.includes(recipe.id) ? "♥" : "♡"}
         </button>
 
-        <div
-          data-open="${esc(recipe.id)}"
-          role="button"
-          tabindex="0">
-          <div class="art">${esc(recipe.emoji || "🍽️")}</div>
+        <div data-open="${esc(recipe.id)}" role="button" tabindex="0">
+          ${recipeArt(recipe, false)}
           <div class="info">
             <h3>${esc(recipe.name)}</h3>
             <div class="small">
@@ -621,20 +647,22 @@ function cards(items) {
 
 function updateList() {
   const items = recipes.filter(function (recipe) {
-    return (
+    return recipe.published &&
       (page !== "favorites" || favorites.includes(recipe.id)) &&
       (category === "الكل" || recipe.category === category) &&
-      recipe.name.includes(query)
-    );
+      recipe.name.includes(query);
   });
 
-  $("#results").innerHTML = cards(items);
+  const results = $("#results");
+  if (results) results.innerHTML = cards(items);
 }
 
 function renderHome() {
   const categories = ["الكل"];
 
-  recipes.forEach(function (recipe) {
+  recipes.filter(function (recipe) {
+    return recipe.published;
+  }).forEach(function (recipe) {
     if (!categories.includes(recipe.category)) {
       categories.push(recipe.category);
     }
@@ -643,16 +671,20 @@ function renderHome() {
   $("#main").innerHTML = `
     ${page === "home" ? `
       <section class="hero">
-        <span>مطبخكِ اليومي</span>
         <h2>كل وصفة حكاية لذيذة</h2>
-        <p>أطباق تقليدية وحلويات سهلة في مكان واحد.</p>
+        <p>وصفات السيدة رزقي المنشورة</p>
       </section>
-    ` : "<h2>وصفاتي المفضلة</h2>"}
+    ` : "<h2>المفضلة على هذا الجهاز</h2>"}
 
-    <input
-      id="search"
-      aria-label="البحث"
-      placeholder="ابحثي عن وصفة…">
+    <button data-reload="1" ${loading ? "disabled" : ""}>
+      ${loading ? "جارٍ التحميل..." : "↻ تحديث الوصفات"}
+    </button>
+
+    ${loadError ? `
+      <p class="error">${esc(loadError)}</p>
+    ` : ""}
+
+    <input id="search" placeholder="ابحثي عن وصفة..." aria-label="بحث">
 
     <div class="chips">
       ${categories.map(function (item) {
@@ -667,9 +699,18 @@ function renderHome() {
     </div>
 
     <section id="results"></section>
+
+    ${!loading && !loadError && !recipes.length ? `
+      <p class="small">
+        قاعدة الوصفات فارغة.
+        سجّلي دخول الإدارة لإضافة أول وصفة.
+      </p>
+    ` : ""}
   `;
 
   updateList();
+
+  $("#search").value = query;
 
   $("#search").oninput = function (event) {
     query = event.target.value.trim();
@@ -677,25 +718,23 @@ function renderHome() {
   };
 }
 
-function currentRecipe() {
-  return recipes.find(function (recipe) {
-    return recipe.id === selected;
-  });
-}
-
 function renderDetail() {
-  const recipe = currentRecipe();
+  const recipe = recipes.find(function (item) {
+    return item.id === selected;
+  });
 
   if (!recipe) {
     go("home");
     return;
   }
 
+  const video = youtubeUrl(recipe.youtube_url);
+
   $("#main").innerHTML = `
     <button data-go="home">← الرئيسية</button>
 
     <section class="panel">
-      <div class="art">${esc(recipe.emoji || "🍽️")}</div>
+      ${recipeArt(recipe, true)}
       <h2>${esc(recipe.name)}</h2>
 
       <p class="small">
@@ -704,18 +743,25 @@ function renderDetail() {
         ${esc(recipe.servings)} أشخاص
       </p>
 
+      <p style="white-space:pre-wrap">${esc(recipe.description)}</p>
+
       <div class="row">
         <button data-heart="${esc(recipe.id)}">
           ${favorites.includes(recipe.id) ? "♥ محفوظة" : "♡ حفظ"}
         </button>
-        <button id="addShopping">+ المشتريات</button>
+
+        ${video ? `
+          <a class="button youtube" href="${esc(video)}">
+            ▶ مشاهدة فيديو يوتيوب
+          </a>
+        ` : ""}
       </div>
     </section>
 
     <section class="panel">
       <h3>المكونات</h3>
       <ul>
-        ${recipe.ingredients.map(function (text) {
+        ${(recipe.ingredients || []).map(function (text) {
           return "<li>" + esc(text) + "</li>";
         }).join("")}
       </ul>
@@ -724,429 +770,489 @@ function renderDetail() {
     <section class="panel">
       <h3>طريقة التحضير</h3>
       <ol>
-        ${recipe.steps.map(function (text) {
+        ${(recipe.steps || []).map(function (text) {
           return "<li>" + esc(text) + "</li>";
         }).join("")}
       </ol>
-      <button id="cook">ابدئي التحضير خطوة بخطوة</button>
     </section>
   `;
+}
 
-  $("#addShopping").onclick = function () {
-    recipe.ingredients.forEach(function (text) {
-      const exists = shopping.some(function (item) {
-        return item.text === text;
-      });
+function renderLogin() {
+  $("#main").innerHTML = `
+    <h2>دخول الإدارة</h2>
 
-      if (!exists) {
-        shopping.push({ text: text, done: false });
+    <p class="small">
+      استخدمي البريد وكلمة المرور اللذين أنشأتهما
+      في Supabase Authentication.
+    </p>
+
+    <form id="loginForm" class="panel">
+      <label>
+        البريد الإلكتروني
+        <input
+          name="email"
+          type="email"
+          autocomplete="username"
+          required
+          dir="ltr">
+      </label>
+
+      <label>
+        كلمة المرور
+        <input
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required>
+      </label>
+
+      <button id="loginButton" type="submit">تسجيل الدخول</button>
+      <p id="loginError" class="error" hidden></p>
+    </form>
+  `;
+
+  $("#loginForm").onsubmit = async function (event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const button = $("#loginButton");
+    const errorBox = $("#loginError");
+
+    button.disabled = true;
+    errorBox.hidden = true;
+
+    try {
+      const data = await rawRequest(
+        "/auth/v1/token?grant_type=password",
+        {
+          method: "POST",
+          body: {
+            email: form.elements.email.value.trim(),
+            password: form.elements.password.value
+          }
+        }
+      );
+
+      setSession(data);
+      form.reset();
+
+      if (!isAdmin()) {
+        const token = session.access_token;
+        session = null;
+
+        rawRequest("/auth/v1/logout", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        }).catch(function () {});
+
+        throw new Error("هذا الحساب غير مخوّل بإدارة الوصفات.");
       }
-    });
 
-    if (save()) toast("أضيفت المكونات إلى مشترياتك");
-  };
+      toast("تم تسجيل دخول الإدارة");
+      await loadRecipes();
 
-  $("#cook").onclick = function () {
-    step = 0;
-    page = "cook";
-    render();
-    window.scrollTo(0, 0);
+    } catch (error) {
+      if ($("#loginError")) {
+        $("#loginError").textContent = error.message;
+        $("#loginError").hidden = false;
+      }
+    } finally {
+      if ($("#loginButton")) {
+        $("#loginButton").disabled = false;
+      }
+    }
   };
 }
 
-function renderCook() {
-  const recipe = currentRecipe();
-
-  if (!recipe) {
-    go("home");
+function renderAdmin() {
+  if (!isAdmin()) {
+    renderLogin();
     return;
   }
 
-  step = Math.max(0, Math.min(step, recipe.steps.length - 1));
-
   $("#main").innerHTML = `
-    <h2>${esc(recipe.name)}</h2>
-
-    <section class="panel">
-      <p class="small">
-        الخطوة ${step + 1} من ${recipe.steps.length}
-      </p>
-
-      <h3 style="line-height:2">${esc(recipe.steps[step])}</h3>
-
-      <div class="row">
-        <button id="prev" ${step === 0 ? "disabled" : ""}>
-          السابقة
-        </button>
-
-        <button id="next">
-          ${step === recipe.steps.length - 1 ?
-            "إنهاء التحضير ✓" : "التالية"}
-        </button>
-      </div>
-    </section>
-
-    <button id="backDetail">كل الخطوات</button>
-  `;
-
-  $("#prev").onclick = function () {
-    step--;
-    render();
-  };
-
-  $("#next").onclick = function () {
-    if (step < recipe.steps.length - 1) {
-      step++;
-      render();
-    } else {
-      page = "detail";
-      render();
-      toast("بالصحة والهناء!");
-    }
-  };
-
-  $("#backDetail").onclick = function () {
-    page = "detail";
-    render();
-  };
-}
-
-function renderShopping() {
-  $("#main").innerHTML = `
-    <h2>قائمة المشتريات</h2>
-
-    <form id="shopForm">
-      <input
-        id="shopText"
-        required
-        maxlength="200"
-        placeholder="أضيفي مكوّنًا">
-      <button type="submit">إضافة</button>
-    </form>
-
-    <section class="panel">
-      ${shopping.length ? shopping.map(function (item, index) {
-        return `
-          <div class="shop-row ${item.done ? "done" : ""}">
-            <label>
-              <input
-                type="checkbox"
-                data-check="${index}"
-                ${item.done ? "checked" : ""}>
-              ${esc(item.text)}
-            </label>
-
-            <button data-remove="${index}" aria-label="حذف">
-              ×
-            </button>
-          </div>
-        `;
-      }).join("") : "<p>أضيفي مكونات وصفة أو اكتبيها هنا.</p>"}
-    </section>
-
-    <button id="clearDone">حذف المشتريات المكتملة</button>
-  `;
-
-  $("#shopForm").onsubmit = function (event) {
-    event.preventDefault();
-
-    const text = $("#shopText").value.trim();
-    if (!text) return;
-
-    shopping.push({ text: text, done: false });
-    save();
-    render();
-  };
-
-  $("#clearDone").onclick = function () {
-    shopping = shopping.filter(function (item) {
-      return !item.done;
-    });
-
-    save();
-    render();
-  };
-}
-
-function renderManage() {
-  $("#main").innerHTML = `
-    <h2>مطبخي الخاص</h2>
+    <h2>إدارة الوصفات</h2>
 
     <p class="small">
-      التعديلات محفوظة على هذا الهاتف فقط.
-      هذه ليست لوحة أدمن سحابية.
-      احفظي نسخة احتياطية قبل حذف التطبيق.
+      ${esc(session.user.email)}
+      · الوصفات المحمّلة: ${recipes.length}
     </p>
 
     <div class="row">
-      <button id="newRecipe">+ وصفة جديدة</button>
-      <button id="backup">نسخة احتياطية</button>
-      <button id="restore">استعادة نسخة</button>
+      <button data-new="1">+ وصفة جديدة</button>
+      <button data-reload="1" ${loading ? "disabled" : ""}>
+        ${loading ? "تحميل..." : "تحديث"}
+      </button>
+      <button id="logout">خروج</button>
     </div>
 
-    <textarea
-      id="backupText"
-      aria-label="النسخة الاحتياطية"
-      placeholder="انسخي النص لحفظه خارج التطبيق، أو الصقي نسخة لاستعادتها"></textarea>
+    ${loadError ? `<p class="error">${esc(loadError)}</p>` : ""}
 
     <section class="panel">
-      ${recipes.map(function (recipe) {
+      ${recipes.length ? recipes.map(function (recipe) {
         return `
-          <div class="row" style="margin-bottom:12px">
-            <span style="flex:1">
-              ${esc(recipe.emoji || "🍽️")} ${esc(recipe.name)}
-            </span>
-            <button data-edit="${esc(recipe.id)}">تعديل</button>
-            <button data-delete="${esc(recipe.id)}">حذف</button>
+          <div style="margin-bottom:18px">
+            <h3>${esc(recipe.name)}</h3>
+            <p>
+              <span class="badge">
+                ${recipe.published ? "منشورة" : "مسودة"}
+              </span>
+              ${recipe.featured ?
+                '<span class="badge">مميزة</span>' : ""}
+            </p>
+            <div class="row">
+              <button data-open="${esc(recipe.id)}">عرض</button>
+              <button data-edit="${esc(recipe.id)}">تعديل</button>
+              <button data-delete="${esc(recipe.id)}">حذف</button>
+            </div>
           </div>
         `;
-      }).join("") || "<p>لم تضيفي وصفات بعد.</p>"}
+      }).join("") : `
+        <p>لا توجد وصفات. اضغطي «وصفة جديدة» للبدء.</p>
+      `}
     </section>
 
     <p class="small">
-      السيدة رزقي · نسخة محلية.
-      الوصفات الأولية أمثلة قابلة للتعديل والأوقات تقريبية.
-      راعي الحساسية الغذائية وتأكدي من نضج الطعام.
+      الرفع المباشر للصور غير مضاف بعد.
+      استخدمي رابط HTTPS مباشرًا لصورة.
+      الجلسة لا تُحفظ بعد إغلاق التطبيق.
     </p>
   `;
 
-  $("#newRecipe").onclick = function () {
-    edit(null);
-  };
+  $("#logout").onclick = async function () {
+    const old = session;
+    session = null;
+    recipes = [];
+    go("home");
 
-  $("#backup").onclick = function () {
-    $("#backupText").value = JSON.stringify({
-      recipes: recipes,
-      favorites: favorites,
-      shopping: shopping
-    });
-
-    $("#backupText").focus();
-    $("#backupText").select();
-    toast("انسخي النص واحفظيه في ملاحظة آمنة");
-  };
-
-  $("#restore").onclick = function () {
-    let data;
-
-    try {
-      data = JSON.parse($("#backupText").value);
-
-      if (!data ||
-          !Array.isArray(data.recipes) ||
-          data.recipes.length > 500 ||
-          !data.recipes.every(validRecipe)) {
-        throw new Error("invalid backup");
+    if (old) {
+      try {
+        await rawRequest("/auth/v1/logout", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + old.access_token
+          }
+        });
+      } catch (error) {
+        toast("تم الخروج محليًا، وتعذر إبطال الجلسة على الخادم.");
       }
-
-      const ids = data.recipes.map(function (recipe) {
-        return recipe.id;
-      });
-
-      if (new Set(ids).size !== ids.length) {
-        throw new Error("duplicate IDs");
-      }
-    } catch (error) {
-      toast("النسخة غير صالحة");
-      return;
     }
 
-    if (!window.confirm("استبدال البيانات الحالية بهذه النسخة؟")) {
-      return;
-    }
-
-    recipes = data.recipes;
-
-    favorites = Array.isArray(data.favorites) ?
-      data.favorites.filter(function (id) {
-        return typeof id === "string";
-      }) : [];
-
-    shopping = Array.isArray(data.shopping) ?
-      data.shopping.filter(function (item) {
-        return item && typeof item.text === "string";
-      }).map(function (item) {
-        return {
-          text: item.text,
-          done: Boolean(item.done)
-        };
-      }) : [];
-
-    const persisted = save();
-    render();
-
-    if (persisted) toast("تمت الاستعادة");
+    await loadRecipes();
   };
 }
 
-function edit(id) {
+function showEditor(id) {
+  if (!isAdmin()) {
+    go("admin");
+    return;
+  }
+
+  editId = id;
+
   const recipe = recipes.find(function (item) {
     return item.id === id;
   }) || {
     name: "",
     category: "أطباق تقليدية",
+    description: "",
     emoji: "🍽️",
+    image_url: "",
+    youtube_url: "",
     time: 30,
     servings: 4,
     ingredients: [],
-    steps: []
+    steps: [],
+    featured: false,
+    published: false
   };
 
   page = "edit";
   renderNav();
 
   $("#main").innerHTML = `
-    <h2>${id ? "تعديل وصفة" : "وصفة جديدة"}</h2>
+    <h2>${id ? "تعديل الوصفة" : "وصفة جديدة"}</h2>
 
-    <form id="recipeForm">
+    <form id="recipeForm" class="panel">
       <label>
         اسم الوصفة
-        <input
-          name="name"
-          required
-          maxlength="100"
+        <input name="name" maxlength="150" required
           value="${esc(recipe.name)}">
       </label>
 
       <label>
         التصنيف
-        <input
-          name="category"
-          required
-          maxlength="60"
+        <input name="category" maxlength="80" required
           value="${esc(recipe.category)}">
       </label>
 
       <label>
+        وصف مختصر
+        <textarea name="description" maxlength="3000">${esc(
+          recipe.description
+        )}</textarea>
+      </label>
+
+      <label>
         رمز الطبق
-        <input
-          name="emoji"
-          maxlength="12"
-          value="${esc(recipe.emoji || "🍽️")}">
+        <input name="emoji" maxlength="12"
+          value="${esc(recipe.emoji)}">
+      </label>
+
+      <label>
+        رابط صورة الطبق
+        <input name="image_url" type="url" dir="ltr"
+          placeholder="https://example.com/recipe.jpg"
+          value="${esc(recipe.image_url)}">
+      </label>
+
+      <label>
+        رابط فيديو يوتيوب
+        <input name="youtube_url" type="url" dir="ltr"
+          placeholder="https://www.youtube.com/watch?v=..."
+          value="${esc(recipe.youtube_url)}">
       </label>
 
       <label>
         المدة بالدقائق
-        <input
-          name="time"
-          type="number"
-          min="1"
-          max="1440"
-          required
-          value="${esc(recipe.time)}">
+        <input name="time" type="number" min="1" max="1440"
+          required value="${esc(recipe.time)}">
       </label>
 
       <label>
         عدد الأشخاص
-        <input
-          name="servings"
-          type="number"
-          min="1"
-          max="100"
-          required
-          value="${esc(recipe.servings)}">
+        <input name="servings" type="number" min="1" max="100"
+          required value="${esc(recipe.servings)}">
       </label>
 
       <label>
         المكونات: كل مكوّن في سطر
         <textarea name="ingredients" required>${esc(
-          recipe.ingredients.join(NL)
+          (recipe.ingredients || []).join(NL)
         )}</textarea>
       </label>
 
       <label>
-        الخطوات: كل خطوة في سطر
+        طريقة التحضير: كل خطوة في سطر
         <textarea name="steps" required>${esc(
-          recipe.steps.join(NL)
+          (recipe.steps || []).join(NL)
         )}</textarea>
       </label>
 
+      <label>
+        <input name="featured" type="checkbox"
+          ${recipe.featured ? "checked" : ""}>
+        وصفة مميزة
+      </label>
+
+      <label>
+        <input name="published" type="checkbox"
+          ${recipe.published ? "checked" : ""}>
+        نشر الوصفة للجميع
+      </label>
+
+      <p class="small">
+        إذا لم تفعّلي النشر، تُحفظ الوصفة كمسودة للأدمن فقط.
+      </p>
+
+      <p id="formError" class="error" hidden></p>
+
       <div class="row">
-        <button type="submit">حفظ الوصفة</button>
-        <button type="button" data-go="manage">إلغاء</button>
+        <button id="saveButton" type="submit">حفظ الوصفة</button>
+        <button id="cancelEdit" type="button">إلغاء</button>
       </div>
     </form>
   `;
 
-  $("#recipeForm").onsubmit = function (event) {
-    event.preventDefault();
-
-    const form = event.target;
-
-    function field(name) {
-      return form.elements.namedItem(name).value.trim();
-    }
-
-    function lines(name) {
-      return field(name).split(NL).map(function (text) {
-        return text.trim();
-      }).filter(function (text) {
-        return text.length > 0;
-      });
-    }
-
-    const value = {
-      id: id || "local-" + Date.now() + "-" +
-        Math.random().toString(36).slice(2, 8),
-      name: field("name"),
-      category: field("category"),
-      emoji: field("emoji") || "🍽️",
-      time: Number(field("time")),
-      servings: Number(field("servings")),
-      ingredients: lines("ingredients"),
-      steps: lines("steps")
-    };
-
-    if (!value.name ||
-        !value.category ||
-        !value.ingredients.length ||
-        !value.steps.length ||
-        !(value.time >= 1 && value.time <= 1440) ||
-        !(value.servings >= 1 && value.servings <= 100)) {
-      toast("أكملي جميع الحقول بقيم صحيحة");
-      return;
-    }
-
-    if (id) {
-      recipes = recipes.map(function (item) {
-        return item.id === id ? value : item;
-      });
-    } else {
-      recipes.unshift(value);
-    }
-
-    const persisted = save();
-    go("manage");
-
-    if (persisted) toast("حُفظت الوصفة");
+  $("#cancelEdit").onclick = function () {
+    go("admin");
   };
 
+  $("#recipeForm").onsubmit = saveRecipe;
   window.scrollTo(0, 0);
 }
 
+async function saveRecipe(event) {
+  event.preventDefault();
+
+  if (!isAdmin()) {
+    go("admin");
+    return;
+  }
+
+  const form = event.target;
+  const id = editId;
+  const button = $("#saveButton");
+  const cancel = $("#cancelEdit");
+  const errorBox = $("#formError");
+
+  function value(name) {
+    return form.elements.namedItem(name).value.trim();
+  }
+
+  function lines(name) {
+    return value(name).split(NL).map(function (text) {
+      return text.trim();
+    }).filter(Boolean);
+  }
+
+  const image = value("image_url");
+  const video = value("youtube_url");
+
+  const recipe = {
+    name: value("name"),
+    category: value("category"),
+    description: value("description"),
+    emoji: value("emoji") || "🍽️",
+    image_url: image ? safeHttps(image) : "",
+    youtube_url: video ? youtubeUrl(video) : "",
+    time: Number(value("time")),
+    servings: Number(value("servings")),
+    ingredients: lines("ingredients"),
+    steps: lines("steps"),
+    featured: form.elements.featured.checked,
+    published: form.elements.published.checked
+  };
+
+  errorBox.hidden = true;
+
+  try {
+    if (!recipe.name || !recipe.category) {
+      throw new Error("اكتبي اسم الوصفة والتصنيف.");
+    }
+
+    if (!recipe.ingredients.length || !recipe.steps.length) {
+      throw new Error("أضيفي المكونات وخطوات التحضير.");
+    }
+
+    if (
+      !Number.isInteger(recipe.time) ||
+      recipe.time < 1 || recipe.time > 1440 ||
+      !Number.isInteger(recipe.servings) ||
+      recipe.servings < 1 || recipe.servings > 100
+    ) {
+      throw new Error("تحققي من المدة وعدد الأشخاص.");
+    }
+
+    if (image && !recipe.image_url) {
+      throw new Error("رابط الصورة يجب أن يكون HTTPS صالحًا.");
+    }
+
+    if (video && !recipe.youtube_url) {
+      throw new Error("استخدمي رابط HTTPS من يوتيوب.");
+    }
+
+    button.disabled = true;
+    cancel.disabled = true;
+    button.textContent = "جارٍ الحفظ...";
+
+    const path = id ?
+      "/rest/v1/recipes?id=eq." + encodeURIComponent(id) :
+      "/rest/v1/recipes";
+
+    const saved = await api(path, {
+      method: id ? "PATCH" : "POST",
+      headers: {
+        "Prefer": "return=representation"
+      },
+      body: recipe
+    });
+
+    if (!Array.isArray(saved) || saved.length !== 1) {
+      throw new Error(
+        "لم يتم تأكيد الحفظ. تحققي من حساب الإدارة والصلاحيات."
+      );
+    }
+
+    const row = saved[0];
+    const index = recipes.findIndex(function (item) {
+      return item.id === row.id;
+    });
+
+    if (index >= 0) {
+      recipes[index] = row;
+    } else {
+      recipes.unshift(row);
+    }
+
+    go("admin");
+    toast("حُفظت الوصفة في Supabase");
+
+  } catch (error) {
+    errorBox.textContent = error.message;
+    errorBox.hidden = false;
+    button.disabled = false;
+    cancel.disabled = false;
+    button.textContent = "حفظ الوصفة";
+  }
+}
+
+async function deleteRecipe(id, button) {
+  if (!isAdmin()) return;
+  if (!window.confirm("حذف الوصفة نهائيًا من قاعدة البيانات؟")) {
+    return;
+  }
+
+  button.disabled = true;
+
+  try {
+    const removed = await api(
+      "/rest/v1/recipes?id=eq." + encodeURIComponent(id),
+      {
+        method: "DELETE",
+        headers: {
+          "Prefer": "return=representation"
+        }
+      }
+    );
+
+    if (!Array.isArray(removed) || removed.length !== 1) {
+      throw new Error("لم يتم تأكيد الحذف. تحققي من الصلاحيات.");
+    }
+
+    recipes = recipes.filter(function (recipe) {
+      return recipe.id !== id;
+    });
+
+    favorites = favorites.filter(function (item) {
+      return item !== id;
+    });
+
+    saveFavorites();
+    render();
+    toast("تم حذف الوصفة");
+
+  } catch (error) {
+    toast(error.message);
+    button.disabled = false;
+  }
+}
+
 function render() {
+  /* لا نمسح نموذجًا قيد الكتابة عند انتهاء تحميل بالخلفية */
+  if (page === "edit") return;
+
   renderNav();
 
   if (page === "home" || page === "favorites") {
     renderHome();
   } else if (page === "detail") {
     renderDetail();
-  } else if (page === "cook") {
-    renderCook();
-  } else if (page === "shopping") {
-    renderShopping();
-  } else if (page === "manage") {
-    renderManage();
+  } else if (page === "admin") {
+    renderAdmin();
   }
 }
 
 document.addEventListener("click", function (event) {
   const button = event.target.closest(
     "[data-go], [data-open], [data-heart], [data-cat], " +
-    "[data-remove], [data-edit], [data-delete]"
+    "[data-reload], [data-new], [data-edit], [data-delete]"
   );
 
-  if (!button) return;
+  if (!button || button.disabled) return;
 
   const data = button.dataset;
 
@@ -1168,7 +1274,7 @@ document.addEventListener("click", function (event) {
       favorites.push(data.heart);
     }
 
-    save();
+    saveFavorites();
 
     if (page === "home" || page === "favorites") {
       updateList();
@@ -1188,43 +1294,32 @@ document.addEventListener("click", function (event) {
 
     updateList();
 
-  } else if (data.remove !== undefined) {
-    shopping.splice(Number(data.remove), 1);
-    save();
-    render();
+  } else if (data.reload) {
+    loadRecipes();
+
+  } else if (data.new) {
+    showEditor(null);
 
   } else if (data.edit) {
-    edit(data.edit);
+    showEditor(data.edit);
 
   } else if (data.delete) {
-    if (!window.confirm("حذف هذه الوصفة؟")) return;
-
-    recipes = recipes.filter(function (recipe) {
-      return recipe.id !== data.delete;
-    });
-
-    favorites = favorites.filter(function (id) {
-      return id !== data.delete;
-    });
-
-    save();
-    render();
+    deleteRecipe(data.delete, button);
   }
 });
 
-document.addEventListener("change", function (event) {
-  const index = event.target.dataset.check;
-  if (index === undefined) return;
+document.addEventListener("error", function (event) {
+  const image = event.target;
 
-  const item = shopping[Number(index)];
-  if (!item) return;
-
-  item.done = event.target.checked;
-  save();
-  render();
-});
+  if (image.tagName === "IMG") {
+    const parent = image.parentElement;
+    image.remove();
+    parent.textContent = "🍽️";
+  }
+}, true);
 
 render();
+loadRecipes();
 </script>
 
 </body>
