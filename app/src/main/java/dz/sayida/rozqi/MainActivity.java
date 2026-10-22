@@ -189,8 +189,8 @@ public class MainActivity extends Activity {
             String line;
 
             while ((line = reader.readLine()) != null) {
-                html.append(line).append('
-');
+                html.append(line);
+                html.append((char) 10);
             }
 
             webView.loadDataWithBaseURL(
@@ -202,13 +202,13 @@ public class MainActivity extends Activity {
             );
 
         } catch (Exception exception) {
+            String message =
+                    "تأكدي من وجود الملف: " +
+                    "app/src/main/assets/index.html";
+
             new AlertDialog.Builder(this)
                     .setTitle("تعذر فتح الواجهة")
-                    .setMessage(
-                            "تأكدي من وجود الملف:" +
-                            "
-app/src/main/assets/index.html"
-                    )
+                    .setMessage(message)
                     .setPositiveButton(
                             "إغلاق",
                             (dialog, which) -> finish()
