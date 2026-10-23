@@ -5,6 +5,9 @@ on:
     branches: [flutter-app, main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,10 +36,27 @@ jobs:
         run: flutter analyze
 
       - name: Build debug APK
-        run: flutter build apk --debug --verbose
+        run: flutter build apk --debug
 
-      - name: Upload APK
+      - name: Rename APK
+        run: |
+          mkdir -p release
+          cp build/app/outputs/flutter-apk/app-debug.apk release/sayida-rozqi.apk
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: sayida-rozqi-flutter-apk
-          path: build/app/outputs/flutter-apk/*.apk
+          path: release/sayida-rozqi.apk
+
+      - name: Delete previous release
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Publish APK to GitHub Releases
+        run: |
+          gh release create latest release/sayida-rozqi.apk --title "تطبيق السيدة رزقي" --notes "حمّلي ملف sayida-rozqi.apk مباشرة وثبّتيه على هاتفك."
+        env:
+          GH_TOKEN: ${{ github.token }}
