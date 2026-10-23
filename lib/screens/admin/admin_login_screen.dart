@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/supabase_service.dart';
-import '../theme.dart';
+import '../../services/supabase_service.dart';
+import '../../theme.dart';
 import 'recipe_management_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {

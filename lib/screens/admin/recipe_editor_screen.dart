@@ -12,18 +12,35 @@ class RecipeEditorScreen extends StatefulWidget {
 
 class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
   final form = GlobalKey<FormState>();
-  late final name = TextEditingController(text: widget.recipe?.name ?? '');
-  late final category = TextEditingController(text: widget.recipe?.category ?? 'أطباق تقليدية');
-  late final description = TextEditingController(text: widget.recipe?.description ?? '');
-  late final image = TextEditingController(text: widget.recipe?.imageUrl ?? '');
-  late final youtube = TextEditingController(text: widget.recipe?.youtubeUrl ?? '');
-  late final time = TextEditingController(text: (widget.recipe?.time ?? 30).toString());
-  late final servings = TextEditingController(text: (widget.recipe?.servings ?? 4).toString());
-  late final ingredients = TextEditingController(text: (widget.recipe?.ingredients ?? []).join('\n'));
-  late final steps = TextEditingController(text: (widget.recipe?.steps ?? []).join('\n'));
-  bool featured = widget.recipe?.featured ?? false;
-  bool published = widget.recipe?.published ?? false;
+  late final TextEditingController name;
+  late final TextEditingController category;
+  late final TextEditingController description;
+  late final TextEditingController image;
+  late final TextEditingController youtube;
+  late final TextEditingController time;
+  late final TextEditingController servings;
+  late final TextEditingController ingredients;
+  late final TextEditingController steps;
+  bool featured = false;
+  bool published = false;
   bool saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final recipe = widget.recipe;
+    name = TextEditingController(text: recipe?.name ?? '');
+    category = TextEditingController(text: recipe?.category ?? 'أطباق تقليدية');
+    description = TextEditingController(text: recipe?.description ?? '');
+    image = TextEditingController(text: recipe?.imageUrl ?? '');
+    youtube = TextEditingController(text: recipe?.youtubeUrl ?? '');
+    time = TextEditingController(text: (recipe?.time ?? 30).toString());
+    servings = TextEditingController(text: (recipe?.servings ?? 4).toString());
+    ingredients = TextEditingController(text: (recipe?.ingredients ?? []).join('\n'));
+    steps = TextEditingController(text: (recipe?.steps ?? []).join('\n'));
+    featured = recipe?.featured ?? false;
+    published = recipe?.published ?? false;
+  }
 
   Future<void> save() async {
     if (!form.currentState!.validate()) return;
