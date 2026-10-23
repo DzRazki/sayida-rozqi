@@ -26,9 +26,9 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SupabaseService.isAdmin() ? const RecipeManagementScreen() : const AdminLoginScreen())),
             ),
           ),
-          const Card(
+          Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: ListTile(leading: Icon(Icons.info_outline), title: Text('حول التطبيق'), subtitle: Text('تطبيق وصفات جزائرية أصيلة')),
+            child: const ListTile(leading: Icon(Icons.info_outline), title: Text('حول التطبيق'), subtitle: Text('تطبيق وصفات جزائرية أصيلة')),
           ),
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
