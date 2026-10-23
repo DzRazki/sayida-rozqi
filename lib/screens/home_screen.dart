@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../services/supabase_service.dart';
 import '../theme.dart';
+import '../widgets/recipe_card.dart';
 import 'categories_screen.dart';
 import 'favorites_screen.dart';
-import 'recipe_details_screen.dart';
+import 'notifications_screen.dart';
 import 'settings_screen.dart';
+import 'admin/admin_login_screen.dart';
+import 'admin/recipe_management_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Recipe> recipes = [];
   bool loading = true;
   String query = '';
+  String selectedCategory = 'الكل';
 
   @override
   void initState() {
@@ -33,152 +37,57 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) setState(() => loading = false);
   }
 
+  List<Recipe> get filtered {
+    var items = recipes.where((r) => r.name.contains(query)).toList();
+    if (selectedCategory != 'الكل') items = items.where((r) => r.category == selectedCategory).toList();
+    items.sort((a, b) => (b.featured ? 1 : 0).compareTo(a.featured ? 1 : 0));
+    return items;
+  }
+
+  List<String> get categories => ['الكل', ...recipes.map((r) => r.category).toSet()];
+
   @override
   Widget build(BuildContext context) {
-    final published = recipes;
-    final Recipe? featured = published.isNotEmpty ? (published.firstWhere((r) => r.featured, orElse: () => published.first)) : null;
-    final filtered = published.where((r) => r.name.contains(query)).take(3).toList();
-    final categories = published.map((r) => r.category).toSet().toList();
-
+    final featured = recipes.where((r) => r.featured).take(3).toList();
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(padding: EdgeInsets.zero, children: [
+          DrawerHeader(decoration: const BoxDecoration(color: AppColors.darkBrown), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.end, children: [const Text('🍲', style: TextStyle(fontSize: 34)), const SizedBox(height: 8), const Text('السيدة رزقي', style: TextStyle(color: AppColors.gold, fontSize: 20, fontWeight: FontWeight.bold)), const Text('أشهى الوصفات الجزائرية', style: TextStyle(color: Colors.white70, fontSize: 12))])),
+          ListTile(leading: const Icon(Icons.home_outlined), title: const Text('الرئيسية'), onTap: () => Navigator.pop(context)),
+          ListTile(leading: const Icon(Icons.category_outlined), title: const Text('الفئات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen())); }),
+          ListTile(leading: const Icon(Icons.favorite_border), title: const Text('المفضلة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen())); }),
+          ListTile(leading: const Icon(Icons.notifications_none), title: const Text('الإشعارات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())); }),
+          ListTile(leading: const Icon(Icons.settings_outlined), title: const Text('الإعدادات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())); }),
+          if (SupabaseService.isAdmin()) ListTile(leading: const Icon(Icons.admin_panel_settings), title: const Text('لوحة الإدارة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const RecipeManagementScreen())); }) else ListTile(leading: const Icon(Icons.admin_panel_settings_outlined), title: const Text('دخول الإدارة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminLoginScreen())); }),
+        ]),
+      ),
       appBar: AppBar(
-        leading: const Icon(Icons.menu),
+        leading: Builder(builder: (context) => IconButton(icon: const Icon(Icons.menu), onPressed: () => Scaffold.of(context).openDrawer())),
         title: const Text('السيدة رزقي', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)),
-        actions: const [Padding(padding: EdgeInsets.all(14), child: Icon(Icons.notifications_none))],
+        actions: [IconButton(icon: const Icon(Icons.notifications_none), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())))],
       ),
       body: RefreshIndicator(
         onRefresh: load,
         child: ListView(
           padding: const EdgeInsets.all(14),
           children: [
-            TextField(
-              onChanged: (value) => setState(() => query = value.trim()),
-              decoration: const InputDecoration(hintText: 'ابحثي عن وصفة...', prefixIcon: Icon(Icons.search)),
-            ),
+            TextField(onChanged: (value) => setState(() => query = value.trim()), decoration: const InputDecoration(hintText: 'ابحثي عن وصفة...', prefixIcon: Icon(Icons.search))),
             const SizedBox(height: 14),
-            if (featured != null) _FeaturedCard(recipe: featured),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('التصنيفات', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
-                TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen())), child: const Text('عرض الكل')),
-              ],
-            ),
-            SizedBox(
-              height: 96,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: categories.map((category) => _CategoryCard(name: category, emoji: '🍽️')).toList(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text('أحدث الوصفات', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
+            SizedBox(height: 42, child: ListView(scrollDirection: Axis.horizontal, children: categories.map((category) => Padding(padding: const EdgeInsets.only(left: 8), child: ChoiceChip(label: Text(category), selected: selectedCategory == category, onSelected: (_) => setState(() => selectedCategory = category)))).toList())),
+            const SizedBox(height: 16),
+            if (selectedCategory == 'الكل' && featured.isNotEmpty) ...[
+              const Text('وصفات مميزة', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              SizedBox(height: 230, child: ListView(scrollDirection: Axis.horizontal, children: featured.map((recipe) => SizedBox(width: 250, child: RecipeCard(recipe: recipe))).toList())),
+              const SizedBox(height: 20),
+            ],
+            Text(selectedCategory == 'الكل' ? 'أحدث الوصفات' : selectedCategory, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             if (loading) const Center(child: Padding(padding: EdgeInsets.all(30), child: CircularProgressIndicator())),
-            ...filtered.map((recipe) => _RecipeCard(recipe: recipe)),
+            if (!loading && filtered.isEmpty) const Center(child: Padding(padding: EdgeInsets.all(30), child: Text('لا توجد وصفات في هذا التصنيف'))),
+            if (!loading) GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), mainAxisSpacing: 12, crossAxisSpacing: 12, childAspectRatio: .72, children: filtered.map((recipe) => RecipeCard(recipe: recipe)).toList()),
           ],
         ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 0,
-        onDestinationSelected: (index) {
-          if (index == 1) Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen()));
-          if (index == 2) Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()));
-          if (index == 3) Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
-        },
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'الرئيسية'),
-          NavigationDestination(icon: Icon(Icons.category_outlined), label: 'التصنيفات'),
-          NavigationDestination(icon: Icon(Icons.favorite_border), label: 'المفضلة'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), label: 'الإعدادات'),
-        ],
-      ),
-    );
-  }
-}
-
-class _FeaturedCard extends StatelessWidget {
-  final Recipe recipe;
-  const _FeaturedCard({required this.recipe});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          SizedBox(
-            height: 205,
-            width: double.infinity,
-            child: recipe.imageUrl.isEmpty
-                ? Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 50))))
-                : Image.network(recipe.imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: AppColors.brown)),
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, AppColors.darkBrown.withValues(alpha: .9)])),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Text(recipe.name, style: const TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-              FilledButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailsScreen(recipe: recipe))), child: const Text('عرض الوصفة')),
-            ]),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CategoryCard extends StatelessWidget {
-  final String name;
-  final String emoji;
-  const _CategoryCard({required this.name, required this.emoji});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 86,
-      margin: const EdgeInsets.only(left: 8),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Text(emoji, style: const TextStyle(fontSize: 28)), const SizedBox(height: 5), Text(name, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold), textAlign: TextAlign.center)]),
-    );
-  }
-}
-
-class _RecipeCard extends StatelessWidget {
-  final Recipe recipe;
-  const _RecipeCard({required this.recipe});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(18), border: Border.all(color: AppColors.line)),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: SizedBox(
-              width: 96,
-              height: 82,
-              child: recipe.imageUrl.isEmpty
-                  ? Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 28))))
-                  : Image.network(recipe.imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: AppColors.brown)),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(recipe.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-              Text('${recipe.time} دقيقة · ${recipe.servings} أشخاص', style: const TextStyle(color: AppColors.muted, fontSize: 12)),
-            ]),
-          ),
-          IconButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailsScreen(recipe: recipe))), icon: const Icon(Icons.arrow_back_ios_new, size: 18)),
-        ],
       ),
     );
   }
