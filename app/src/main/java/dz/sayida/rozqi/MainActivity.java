@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 public class MainActivity extends Activity {
     private static final String HOST = "dz.sayida.rozqi";
     private static final String BASE = "https://dz.sayida.rozqi/";
+    private static final String BANNER_FILE = "file_000000002ddc81f5aaeb94c750388f92.png";
     private WebView web;
     private FrameLayout root;
     private View full;
@@ -56,7 +57,7 @@ public class MainActivity extends Activity {
     private WebResourceResponse asset(Uri uri) {
         if (!"https".equalsIgnoreCase(uri.getScheme()) || !HOST.equalsIgnoreCase(uri.getHost())) return null;
         String p = uri.getPath(), f = null, mime = null, enc = null;
-        if ("/banner.jpg".equals(p)) { f = "banner.jpg"; mime = "image/jpeg"; }
+        if ("/banner.jpg".equals(p)) { f = BANNER_FILE; mime = "image/png"; }
         else if ("/logo.png".equals(p)) { f = "logo.png"; mime = "image/png"; }
         else if ("/upgrade.css".equals(p)) { f = "upgrade.css"; mime = "text/css"; enc = "UTF-8"; }
         else if ("/upgrade.js".equals(p)) { f = "upgrade.js"; mime = "text/javascript"; enc = "UTF-8"; }
