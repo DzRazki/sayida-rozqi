@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
-import 'screens/welcome_screen.dart';
 import 'theme.dart';
 
 Future<void> main() async {

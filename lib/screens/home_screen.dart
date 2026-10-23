@@ -51,15 +51,30 @@ class _HomeScreenState extends State<HomeScreen> {
     final featured = recipes.where((r) => r.featured).take(3).toList();
     return Scaffold(
       drawer: Drawer(
-        child: ListView(padding: EdgeInsets.zero, children: [
-          DrawerHeader(decoration: const BoxDecoration(color: AppColors.darkBrown), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.end, children: [const Text('🍲', style: TextStyle(fontSize: 34)), const SizedBox(height: 8), const Text('السيدة رزقي', style: TextStyle(color: AppColors.gold, fontSize: 20, fontWeight: FontWeight.bold)), const Text('أشهى الوصفات الجزائرية', style: TextStyle(color: Colors.white70, fontSize: 12))])),
-          ListTile(leading: const Icon(Icons.home_outlined), title: const Text('الرئيسية'), onTap: () => Navigator.pop(context)),
-          ListTile(leading: const Icon(Icons.category_outlined), title: const Text('الفئات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen())); }),
-          ListTile(leading: const Icon(Icons.favorite_border), title: const Text('المفضلة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen())); }),
-          ListTile(leading: const Icon(Icons.notifications_none), title: const Text('الإشعارات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())); }),
-          ListTile(leading: const Icon(Icons.settings_outlined), title: const Text('الإعدادات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())); }),
-          if (SupabaseService.isAdmin()) ListTile(leading: const Icon(Icons.admin_panel_settings), title: const Text('لوحة الإدارة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const RecipeManagementScreen())); }) else ListTile(leading: const Icon(Icons.admin_panel_settings_outlined), title: const Text('دخول الإدارة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminLoginScreen())); }),
-        ]),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: AppColors.darkBrown),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text('🍲', style: TextStyle(fontSize: 34)),
+                  SizedBox(height: 8),
+                  Text('السيدة رزقي', style: TextStyle(color: AppColors.gold, fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text('أشهى الوصفات الجزائرية', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                ],
+              ),
+            ),
+            ListTile(leading: const Icon(Icons.home_outlined), title: const Text('الرئيسية'), onTap: () => Navigator.pop(context)),
+            ListTile(leading: const Icon(Icons.category_outlined), title: const Text('الفئات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen())); }),
+            ListTile(leading: const Icon(Icons.favorite_border), title: const Text('المفضلة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen())); }),
+            ListTile(leading: const Icon(Icons.notifications_none), title: const Text('الإشعارات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())); }),
+            ListTile(leading: const Icon(Icons.settings_outlined), title: const Text('الإعدادات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())); }),
+            if (SupabaseService.isAdmin()) ListTile(leading: const Icon(Icons.admin_panel_settings), title: const Text('لوحة الإدارة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const RecipeManagementScreen())); }) else ListTile(leading: const Icon(Icons.admin_panel_settings_outlined), title: const Text('دخول الإدارة'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminLoginScreen())); }),
+          ],
+        ),
       ),
       appBar: AppBar(
         leading: Builder(builder: (context) => IconButton(icon: const Icon(Icons.menu), onPressed: () => Scaffold.of(context).openDrawer())),
