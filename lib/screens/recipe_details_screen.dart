@@ -1,19 +1,49 @@
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
+import '../services/favorites_service.dart';
 import '../theme.dart';
+import 'ingredients_screen.dart';
+import 'preparation_steps_screen.dart';
+import 'youtube_screen.dart';
 
-class RecipeDetailsScreen extends StatelessWidget {
+class RecipeDetailsScreen extends StatefulWidget {
   final Recipe recipe;
   const RecipeDetailsScreen({super.key, required this.recipe});
 
   @override
+  State<RecipeDetailsScreen> createState() => _RecipeDetailsScreenState();
+}
+
+class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
+  bool favorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadFavorite();
+  }
+
+  Future<void> loadFavorite() async {
+    favorite = await FavoritesService.isFavorite(widget.recipe.id);
+    if (mounted) setState(() {});
+  }
+
+  Future<void> toggleFavorite() async {
+    await FavoritesService.toggle(widget.recipe.id);
+    favorite = await FavoritesService.isFavorite(widget.recipe.id);
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final recipe = widget.recipe;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 260,
             pinned: true,
+            actions: [IconButton(onPressed: toggleFavorite, icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: AppColors.gold))],
             flexibleSpace: FlexibleSpaceBar(
               background: recipe.imageUrl.isEmpty
                   ? Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 60))))
@@ -30,16 +60,14 @@ class RecipeDetailsScreen extends StatelessWidget {
                 Text(recipe.description),
                 const SizedBox(height: 18),
                 Row(children: [
-                  Expanded(child: FilledButton(onPressed: () {}, child: const Text('المكونات'))),
+                  Expanded(child: FilledButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => IngredientsScreen(recipe: recipe))), child: const Text('المكونات'))),
                   const SizedBox(width: 8),
-                  Expanded(child: FilledButton(onPressed: () {}, child: const Text('طريقة التحضير'))),
+                  Expanded(child: FilledButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PreparationStepsScreen(recipe: recipe))), child: const Text('التحضير'))),
                 ]),
-                const SizedBox(height: 20),
-                const Text('المكونات', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
-                ...recipe.ingredients.map((item) => ListTile(dense: true, leading: const Icon(Icons.check_circle_outline), title: Text(item))),
-                const SizedBox(height: 10),
-                const Text('طريقة التحضير', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
-                ...recipe.steps.asMap().entries.map((entry) => ListTile(dense: true, leading: CircleAvatar(child: Text('${entry.key + 1}')), title: Text(entry.value))),
+                if (recipe.youtubeUrl.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => YoutubeScreen(recipe: recipe))), icon: const Icon(Icons.play_circle_outline), label: const Text('مشاهدة الفيديو'))),
+                ],
               ]),
             ),
           ),
