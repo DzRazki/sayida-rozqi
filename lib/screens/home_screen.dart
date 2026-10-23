@@ -119,7 +119,7 @@ class _FeaturedCard extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, AppColors.darkBrown.withOpacity(.9)])),
+            decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, AppColors.darkBrown.withValues(alpha: .9)])),
             child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               Text(recipe.name, style: const TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),

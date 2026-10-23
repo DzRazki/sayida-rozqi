@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
               decoration: BoxDecoration(
                 color: AppColors.gold,
                 shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(.25), blurRadius: 24)],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .25), blurRadius: 24)],
               ),
               child: const Center(child: Text('🍲', style: TextStyle(fontSize: 54))),
             ),

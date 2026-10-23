@@ -35,9 +35,9 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 14),
                 const Text('اكتشفي عالم الوصفات الجزائرية\nوصفات تقليدية عصرية ومجربة بكل حب', textAlign: TextAlign.center, style: TextStyle(color: Colors.white70, height: 1.7)),
                 const SizedBox(height: 28),
-                _Feature(icon: Icons.play_circle_outline, title: 'فيديوهات تعليمية', subtitle: 'لتسهيل التحضير'),
-                _Feature(icon: Icons.list_alt, title: 'مكونات واضحة', subtitle: 'بكل التفاصيل'),
-                _Feature(icon: Icons.verified_outlined, title: 'وصفات موثوقة', subtitle: 'مجربة ومضمونة'),
+                const _Feature(icon: Icons.play_circle_outline, title: 'فيديوهات تعليمية', subtitle: 'لتسهيل التحضير'),
+                const _Feature(icon: Icons.list_alt, title: 'مكونات واضحة', subtitle: 'بكل التفاصيل'),
+                const _Feature(icon: Icons.verified_outlined, title: 'وصفات موثوقة', subtitle: 'مجربة ومضمونة'),
                 const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
@@ -67,7 +67,7 @@ class _Feature extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(.08), borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: .08), borderRadius: BorderRadius.circular(16)),
       child: Row(
         children: [
           Icon(icon, color: AppColors.gold),
