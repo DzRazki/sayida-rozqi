@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../services/supabase_service.dart';
+import '../theme.dart';
 import '../widgets/recipe_card.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -33,15 +34,36 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final selected = widget.category;
     final items = selected == null ? recipes : recipes.where((r) => r.category == selected).toList();
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F4EF),
+      backgroundColor: AppColors.cream,
       appBar: AppBar(title: Text(selected ?? 'الفئات')),
       body: loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: AppColors.gold))
           : selected == null
-              ? GridView.count(padding: const EdgeInsets.all(16), crossAxisCount: 2, mainAxisSpacing: 12, crossAxisSpacing: 12, children: recipes.map((r) => r.category).toSet().map((category) => GestureDetector(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriesScreen(category: category))), child: Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 12, offset: const Offset(0, 4))]), child: Center(child: Text(category, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)))))).toList())
+              ? GridView.count(
+                  padding: const EdgeInsets.all(12),
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 2.6,
+                  children: recipes.map((r) => r.category).toSet().map((category) => GestureDetector(
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriesScreen(category: category))),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 12, offset: const Offset(0, 4))]),
+                      child: Center(child: Text(category, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBrown))),
+                    ),
+                  )).toList(),
+                )
               : items.isEmpty
                   ? const Center(child: Text('لا توجد وصفات في هذا التصنيف'))
-                  : GridView.count(padding: const EdgeInsets.all(14), crossAxisCount: 2, mainAxisSpacing: 14, crossAxisSpacing: 14, childAspectRatio: .68, children: items.map((recipe) => RecipeCard(recipe: recipe)).toList()),
+                  : GridView.count(
+                      padding: const EdgeInsets.all(12),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: .68,
+                      children: items.map((recipe) => RecipeCard(recipe: recipe)).toList(),
+                    ),
     );
   }
 }
