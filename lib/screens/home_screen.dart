@@ -114,13 +114,14 @@ class _HomeScreenState extends State<HomeScreen> {
           )),
           if (query.isEmpty) Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Column(children: [
             heading('التصنيفات'),
-            LayoutBuilder(builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 600 ? 5 : 3;
-              final width = (constraints.maxWidth - 6 * (columns - 1)) / columns;
-              return Wrap(spacing: 6, runSpacing: 6, children: categoryPhotos.keys.map((name) => SizedBox(
-                width: width, child: CategoryPhotoTile(category: name, onTap: () => open(CategoriesScreen(category: name))),
-              )).toList());
-            }),
+            SingleChildScrollView(
+              key: const PageStorageKey<String>('home-category-strip'),
+              scrollDirection: Axis.horizontal,
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: categoryPhotos.keys.map((name) => Padding(
+                padding: const EdgeInsetsDirectional.only(end: 6),
+                child: SizedBox(width: 116, child: CategoryPhotoTile(category: name, onTap: () => open(CategoriesScreen(category: name)))),
+              )).toList()),
+            ),
           ])),
           Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: heading(query.isEmpty ? 'كل الوصفات' : 'نتائج البحث')),
           Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Column(children: [
