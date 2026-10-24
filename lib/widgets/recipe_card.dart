@@ -6,7 +6,8 @@ import '../screens/recipe_details_screen.dart';
 
 class RecipeCard extends StatefulWidget {
   final Recipe recipe;
-  const RecipeCard({super.key, required this.recipe});
+  final bool large;
+  const RecipeCard({super.key, required this.recipe, this.large = false});
 
   @override
   State<RecipeCard> createState() => _RecipeCardState();
@@ -18,15 +19,15 @@ class _RecipeCardState extends State<RecipeCard> {
   @override
   void initState() {
     super.initState();
-    _loadFavorite();
+    _load();
   }
 
-  Future<void> _loadFavorite() async {
+  Future<void> _load() async {
     final value = await FavoritesService.isFavorite(widget.recipe.id);
     if (mounted) setState(() => favorite = value);
   }
 
-  Future<void> _toggleFavorite() async {
+  Future<void> _toggle() async {
     await FavoritesService.toggle(widget.recipe.id);
     final value = await FavoritesService.isFavorite(widget.recipe.id);
     if (mounted) setState(() => favorite = value);
@@ -38,38 +39,16 @@ class _RecipeCardState extends State<RecipeCard> {
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailsScreen(recipe: recipe))),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 12, offset: const Offset(0, 4))],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                  child: AspectRatio(
-                    aspectRatio: 4 / 3,
-                    child: recipe.imageUrl.isEmpty
-                        ? Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 42))))
-                        : Image.network(recipe.imageUrl, width: double.infinity, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 42))))),
-                  ),
-                ),
-                Positioned(top: 8, left: 8, child: GestureDetector(onTap: _toggleFavorite, child: Container(padding: const EdgeInsets.all(6), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: favorite ? Colors.red : AppColors.muted, size: 20)))),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(recipe.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                const SizedBox(height: 4),
-                Row(children: [const Icon(Icons.schedule, size: 14, color: AppColors.muted), const SizedBox(width: 4), Text('${recipe.time} د', style: const TextStyle(fontSize: 11, color: AppColors.muted)), const SizedBox(width: 10), const Icon(Icons.group, size: 14, color: AppColors.muted), const SizedBox(width: 4), Text('${recipe.servings}', style: const TextStyle(fontSize: 11, color: AppColors.muted))]),
-              ]),
-            ),
-          ],
-        ),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .08), blurRadius: 18, offset: const Offset(0, 6))]),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Stack(children: [
+            AspectRatio(aspectRatio: widget.large ? 16 / 9 : 4 / 3, child: recipe.imageUrl.isEmpty ? Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 46)))) : Image.network(recipe.imageUrl, width: double.infinity, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 46)))))),
+            Positioned(top: 10, left: 10, child: GestureDetector(onTap: _toggle, child: Container(padding: const EdgeInsets.all(7), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: favorite ? Colors.red : AppColors.muted, size: 20)))),
+            if (recipe.featured) Positioned(top: 10, right: 10, child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(20)), child: const Text('مميزة', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.darkBrown)))),
+          ]),
+          Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(recipe.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: widget.large ? 17 : 14, fontWeight: FontWeight.bold)), const SizedBox(height: 6), Row(children: [const Icon(Icons.schedule, size: 14, color: AppColors.muted), const SizedBox(width: 4), Text('${recipe.time} د', style: const TextStyle(fontSize: 11, color: AppColors.muted)), const SizedBox(width: 12), const Icon(Icons.group, size: 14, color: AppColors.muted), const SizedBox(width: 4), Text('${recipe.servings} أشخاص', style: const TextStyle(fontSize: 11, color: AppColors.muted))])])),
+        ]),
       ),
     );
   }
