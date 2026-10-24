@@ -40,7 +40,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ? const Center(child: CircularProgressIndicator(color: AppColors.gold))
           : selected == null
               ? GridView.count(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(10),
                   crossAxisCount: 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
@@ -50,17 +50,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 12, offset: const Offset(0, 4))]),
-                      child: Center(child: Text(category, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBrown))),
+                      child: Center(child: Tooltip(message: category, triggerMode: TooltipTriggerMode.tap, child: Text(category, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBrown)))),
                     ),
                   )).toList(),
                 )
               : items.isEmpty
                   ? const Center(child: Text('لا توجد وصفات في هذا التصنيف'))
                   : GridView.count(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
                       childAspectRatio: .68,
                       children: items.map((recipe) => RecipeCard(recipe: recipe)).toList(),
                     ),
