@@ -57,11 +57,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               : items.isEmpty
                   ? const Center(child: Text('لا توجد وصفات في هذا التصنيف'))
                   : GridView.count(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(8),
                       crossAxisCount: 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: .68,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: .72,
                       children: items.map((recipe) => RecipeCard(recipe: recipe)).toList(),
                     ),
     );
