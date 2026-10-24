@@ -32,34 +32,40 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 118,
-                  height: 118,
+                  width: 128,
+                  height: 128,
                   decoration: BoxDecoration(
                     color: AppColors.gold,
                     shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .25), blurRadius: 28, offset: const Offset(0, 8))],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: .28),
+                        blurRadius: 32,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                  child: const Center(child: Text('🍲', style: TextStyle(fontSize: 52))),
+                  child: const Center(child: Text('🍲', style: TextStyle(fontSize: 56))),
                 ),
-                const SizedBox(height: 26),
+                const SizedBox(height: 28),
                 const Text(
                   'السيدة رزقي',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.gold, fontSize: 34, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppColors.gold, fontSize: 36, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 const Text(
                   'وصفات جزائرية أصلية',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 20),
                 const Text(
-                  'اكتشفي عالم الوصفات الجزائرية\nوصفات تقليدية وعصرية ومجربة بكل حب',
+                  'اكتشفي أشهى الوصفات الجزائرية التقليدية والعصرية،\nمجربة بكل حب وخطوات واضحة.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white70, height: 1.7, fontSize: 15),
                 ),
-                const SizedBox(height: 36),
+                const SizedBox(height: 40),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -67,8 +73,8 @@ class WelcomeScreen extends StatelessWidget {
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.gold,
                       foregroundColor: AppColors.darkBrown,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      padding: const EdgeInsets.symmetric(vertical: 17),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     ),
                     icon: const Icon(Icons.restaurant_menu),
                     label: const Text('ابدأ الآن', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
