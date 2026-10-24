@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/recipe.dart';
 import '../../services/supabase_service.dart';
+import '../../theme.dart';
 import 'recipe_management_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
@@ -51,29 +52,58 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
   }
 
-  Widget metric(String title, int value) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [Text('$value', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)), Text(title)])));
+  Widget metric(String title, int value, IconData icon) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 18, offset: const Offset(0, 6))],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: AppColors.gold),
+        const SizedBox(height: 10),
+        Text('$value', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
+        Text(title, style: const TextStyle(color: AppColors.brown)),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     if (!SupabaseService.isAdmin()) return Scaffold(appBar: AppBar(title: const Text('الإدارة')), body: const Center(child: Text('يلزم تسجيل دخول الإدارة')));
     final ranked = recipes.where((r) => (recipeViews[r.id] ?? 0) > 0).take(5).toList();
     return Scaffold(
+      backgroundColor: AppColors.cream,
       appBar: AppBar(title: const Text('لوحة الإحصائيات'), actions: [IconButton(onPressed: loading ? null : load, tooltip: 'تحديث', icon: const Icon(Icons.refresh))]),
-      body: loading ? const Center(child: CircularProgressIndicator()) : RefreshIndicator(onRefresh: load, child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
+      body: loading ? const Center(child: CircularProgressIndicator(color: AppColors.gold)) : RefreshIndicator(onRefresh: load, child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
         if (error != null) ...[Text(error!), const SizedBox(height: 12), OutlinedButton(onPressed: load, child: const Text('إعادة المحاولة'))] else ...[
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: metric('إجمالي الوصفات', recipes.length)), Expanded(child: metric('إجمالي فتحات الوصفات', views))]),
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: metric('الإعجابات المسجلة', likes)), Expanded(child: metric('عدم الإعجاب المسجل', dislikes))]),
+          Row(children: [Expanded(child: metric('إجمالي الوصفات', recipes.length, Icons.restaurant_menu)), const SizedBox(width: 12), Expanded(child: metric('إجمالي المشاهدات', views, Icons.visibility))]),
+          const SizedBox(height: 12),
+          Row(children: [Expanded(child: metric('الإعجابات', likes, Icons.thumb_up)), const SizedBox(width: 12), Expanded(child: metric('عدم الإعجاب', dislikes, Icons.thumb_down))]),
+          const SizedBox(height: 16),
+          const Text('أكثر الوصفات مشاهدة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
+          const SizedBox(height: 12),
+          if (ranked.isEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Text('لا توجد مشاهدات مسجلة بعد')),
+          ...ranked.map((r) => Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 16, offset: const Offset(0, 5))]),
+            child: ListTile(title: Text(r.name, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBrown)), subtitle: Text(r.category), trailing: Text('${recipeViews[r.id]} مشاهدة', style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold))),
+          )),
           const SizedBox(height: 12),
           const Text('فتحات الوصفات ليست عدد الزوار الفريدين. عدادات التفاعل الحالية لا تضمن تفاعلًا واحدًا لكل مستخدم.'),
-          const SizedBox(height: 16),
-          const Text('أكثر الوصفات مشاهدة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          if (ranked.isEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Text('لا توجد مشاهدات مسجلة بعد')),
-          ...ranked.map((r) => Card(child: ListTile(title: Text(r.name), subtitle: Text(r.category), trailing: Text('${recipeViews[r.id]}')))),
-          const SizedBox(height: 12),
-          const Text('عدد زوار التطبيق وإجمالي المفضلات: لم يتم تفعيل جمعهما بعد.'),
         ],
         const SizedBox(height: 20),
-        FilledButton.icon(onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const RecipeManagementScreen())), icon: const Icon(Icons.edit_note), label: const Text('إدارة الوصفات')),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const RecipeManagementScreen())),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.darkBrown, foregroundColor: AppColors.gold, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
+            icon: const Icon(Icons.edit_note),
+            label: const Text('إدارة الوصفات'),
+          ),
+        ),
       ])),
     );
   }
