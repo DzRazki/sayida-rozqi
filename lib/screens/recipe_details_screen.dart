@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../models/recipe.dart';
 import '../services/favorites_service.dart';
 import '../services/recipe_stats_service.dart';
@@ -17,7 +18,8 @@ class RecipeDetailsScreen extends StatefulWidget {
 }
 class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   bool favorite = false, busy = true, available = false;
-  String? selected, error;
+  bool videoLoading = false;
+  String? selected, error, videoError;
   RecipeStats stats = const RecipeStats(views: 0, likes: 0, dislikes: 0);
   WebViewController? video;
   SupabaseClient get client => Supabase.instance.client;
@@ -26,11 +28,35 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     super.initState();
     loadFavorite();
     refresh(countView: true);
-    final url = Uri.tryParse(widget.recipe.youtubeUrl);
-    final id = url?.queryParameters['v'] ?? url?.pathSegments.lastOrNull;
-    if (id != null && id.isNotEmpty) {
-      video = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted)..loadRequest(Uri.parse('https://www.youtube.com/embed/$id?playsinline=1'));
-    }
+    if (widget.recipe.youtubeUrl.trim().isNotEmpty) prepareVideo();
+  }
+  Future<void> prepareVideo() async {
+    if (videoLoading) return;
+    setState(() { videoLoading = true; videoError = null; });
+    try {
+      final url = Uri.tryParse(widget.recipe.youtubeUrl.trim());
+      final host = url?.host.toLowerCase() ?? '';
+      if (!(host == 'youtu.be' || host == 'youtube.com' || host.endsWith('.youtube.com') || host == 'youtube-nocookie.com' || host.endsWith('.youtube-nocookie.com'))) {
+        throw const FormatException('Invalid YouTube URL');
+      }
+      final id = url?.queryParameters['v'] ?? url?.pathSegments.lastOrNull;
+      if (id == null || !RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(id)) throw const FormatException('Invalid video ID');
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      final identity = Uri(scheme: 'https', host: info.packageName.toLowerCase()).toString();
+      final controller = WebViewController();
+      await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+      await controller.setNavigationDelegate(NavigationDelegate(onWebResourceError: (event) {
+        if (event.isForMainFrame == true && mounted) setState(() => videoError = 'تعذر تحميل الفيديو. تحققي من الاتصال وأعيدي المحاولة.');
+      }));
+      final embed = Uri.https('www.youtube.com', '/embed/$id', {'playsinline': '1', 'origin': identity});
+      await controller.loadRequest(embed, headers: {'Referer': identity});
+      if (mounted) setState(() => video = controller);
+    } on FormatException {
+      if (mounted) setState(() => videoError = 'رابط فيديو الوصفة غير صالح.');
+    } catch (_) {
+      if (mounted) setState(() => videoError = 'تعذر تهيئة المشغل. أعيدي المحاولة.');
+    } finally { if (mounted) setState(() => videoLoading = false); }
   }
   void report(Object e) {
     if (!mounted) return;
@@ -111,9 +137,16 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         if (error != null) ...[const SizedBox(height: 8), Text(error!)],
         TextButton(onPressed: busy ? null : () => refresh(), child: const Text('تحديث الإحصائيات')),
         const SizedBox(height: 18),
-        if (video != null) ...[
+        if (recipe.youtubeUrl.trim().isNotEmpty) ...[
           const Text('فيديو الوصفة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), const SizedBox(height: 10),
-          ClipRRect(borderRadius: BorderRadius.circular(16), child: AspectRatio(aspectRatio: 16 / 9, child: WebViewWidget(controller: video!))), const SizedBox(height: 18),
+          if (videoLoading) const LinearProgressIndicator(),
+          if (video != null) LayoutBuilder(builder: (context, constraints) {
+            final height = constraints.maxWidth / (16 / 9);
+            return SizedBox(height: height < 200 ? 200 : height, child: WebViewWidget(controller: video!));
+          }),
+          if (videoError != null) Text(videoError!),
+          TextButton.icon(onPressed: videoLoading ? null : prepareVideo, icon: const Icon(Icons.refresh), label: const Text('إعادة تحميل الفيديو')),
+          const SizedBox(height: 18),
         ],
         Row(children: [
           Expanded(child: FilledButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => IngredientsScreen(recipe: recipe))), child: const Text('المكونات'))),
