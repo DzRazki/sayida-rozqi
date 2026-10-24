@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/recipe.dart';
-import '../services/supabase_service.dart';
-import '../theme.dart';
+import '../../models/recipe.dart';
+import '../../services/supabase_service.dart';
+import '../../theme.dart';
 import 'recipe_management_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {

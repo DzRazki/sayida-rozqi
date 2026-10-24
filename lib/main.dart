@@ -26,6 +26,7 @@ class SayidaRozqiApp extends StatelessWidget {
       title: 'السيدة رزقي',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      builder: (context, child) => Directionality(textDirection: TextDirection.rtl, child: child!),
       home: showWelcome ? const SplashScreen() : const HomeScreen(),
     );
   }
