@@ -9,7 +9,6 @@ import 'categories_screen.dart';
 import 'favorites_screen.dart';
 import 'notifications_screen.dart';
 import 'recipe_details_screen.dart';
-import 'settings_screen.dart';
 import 'youtube_channel_screen.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../services/supabase_service.dart';
-import '../theme.dart';
 import '../widgets/recipe_card.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -34,7 +33,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final selected = widget.category;
     final items = selected == null ? recipes : recipes.where((r) => r.category == selected).toList();
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F3EE),
+      backgroundColor: const Color(0xFFF8F4EF),
       appBar: AppBar(title: Text(selected ?? 'الفئات')),
       body: loading
           ? const Center(child: CircularProgressIndicator())
