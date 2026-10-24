@@ -63,7 +63,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           child: Row(children: [
             const Icon(Icons.favorite_border, color: AppColors.gold),
             const SizedBox(width: 12),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('المفضلة محفوظة على هذا الهاتف فقط', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBrown)), const SizedBox(height: 4), const Text('سجّلي الدخول للمزامنة، ثم اختاري استيراد المفضلة المحلية إن رغبتِ.', style: TextStyle(color: AppColors.brown))])),
+            const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('المفضلة محفوظة على هذا الهاتف فقط', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBrown)), SizedBox(height: 4), Text('سجّلي الدخول للمزامنة، ثم اختاري استيراد المفضلة المحلية إن رغبتِ.', style: TextStyle(color: AppColors.brown))])),
             TextButton(onPressed: () async {
               await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const UserAuthScreen()));
               if (mounted) await load();
