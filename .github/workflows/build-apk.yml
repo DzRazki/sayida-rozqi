@@ -29,6 +29,16 @@ jobs:
       - name: Create Android platform
         run: flutter create . --platforms=android --org dz.sayida --project-name sayida_rozqi
 
+      - name: Set up Python for launcher icons
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate branded launcher icons
+        run: |
+          python -m pip install 'Pillow==11.3.0'
+          python tools/generate_brand_icons.py
+
       - name: Install dependencies
         run: flutter pub get
 
