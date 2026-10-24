@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../services/supabase_service.dart';
@@ -25,19 +26,32 @@ class _HomeScreenState extends State<HomeScreen> {
   String? error;
   int adminTaps = 0;
   final search = TextEditingController();
-  final PageController sliderController = PageController(viewportFraction: .88);
+  final PageController sliderController = PageController();
+  Timer? sliderTimer;
 
   @override
   void initState() {
     super.initState();
     load();
+    startSliderTimer();
   }
 
   @override
   void dispose() {
     search.dispose();
     sliderController.dispose();
+    sliderTimer?.cancel();
     super.dispose();
+  }
+
+  void startSliderTimer() {
+    sliderTimer?.cancel();
+    sliderTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (!mounted || recipes.isEmpty) return;
+      final next = (sliderController.hasClients ? (sliderController.page?.round() ?? 0) : 0) + 1;
+      final target = next >= recipes.length ? 0 : next;
+      sliderController.animateToPage(target, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    });
   }
 
   Future<void> load() async {
@@ -103,23 +117,20 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.fromLTRB(0, 18, 0, 24),
           children: [
             if (latest.isNotEmpty)
-              SizedBox(
-                height: 210,
+              AspectRatio(
+                aspectRatio: 16 / 9,
                 child: PageView.builder(
                   controller: sliderController,
                   itemCount: latest.length,
                   itemBuilder: (context, index) {
                     final recipe = latest[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 7),
-                      child: InkWell(
-                        onTap: () => open(RecipeDetailsScreen(recipe: recipe)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(26),
-                          child: recipe.imageUrl.isEmpty
-                              ? const ColoredBox(color: AppColors.brown, child: Center(child: Icon(Icons.restaurant, color: Colors.white)))
-                              : Image.network(recipe.imageUrl, fit: BoxFit.cover, filterQuality: FilterQuality.high, gaplessPlayback: true, errorBuilder: (_, __, ___) => const ColoredBox(color: AppColors.brown, child: Center(child: Icon(Icons.restaurant, color: Colors.white)))),
-                        ),
+                    return InkWell(
+                      onTap: () => open(RecipeDetailsScreen(recipe: recipe)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(0),
+                        child: recipe.imageUrl.isEmpty
+                            ? const ColoredBox(color: AppColors.brown, child: Center(child: Icon(Icons.restaurant, color: Colors.white)))
+                            : Image.network(recipe.imageUrl, width: double.infinity, fit: BoxFit.cover, filterQuality: FilterQuality.high, gaplessPlayback: true, errorBuilder: (_, __, ___) => const ColoredBox(color: AppColors.brown, child: Center(child: Icon(Icons.restaurant, color: Colors.white)))),
                       ),
                     );
                   },
