@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void startSliderTimer() {
     sliderTimer?.cancel();
-    sliderTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    sliderTimer = Timer.periodic(const Duration(seconds: 7), (timer) {
       if (!mounted || recipes.isEmpty) return;
       final next = (sliderController.hasClients ? (sliderController.page?.round() ?? 0) : 0) + 1;
       final target = next >= recipes.length ? 0 : next;
@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget heading(String title, VoidCallback onTap) => Padding(
-    padding: const EdgeInsets.only(top: 22, bottom: 12),
+    padding: const EdgeInsets.only(top: 16, bottom: 8),
     child: Row(children: [
       Container(width: 5, height: 22, decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(3))),
       const SizedBox(width: 10),
@@ -114,30 +114,55 @@ class _HomeScreenState extends State<HomeScreen> {
         onRefresh: load,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(0, 18, 0, 24),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
           children: [
             if (latest.isNotEmpty)
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: PageView.builder(
-                  controller: sliderController,
-                  itemCount: latest.length,
-                  itemBuilder: (context, index) {
-                    final recipe = latest[index];
-                    return InkWell(
-                      onTap: () => open(RecipeDetailsScreen(recipe: recipe)),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(0),
-                        child: recipe.imageUrl.isEmpty
-                            ? const ColoredBox(color: AppColors.brown, child: Center(child: Icon(Icons.restaurant, color: Colors.white)))
-                            : Image.network(recipe.imageUrl, width: double.infinity, fit: BoxFit.cover, filterQuality: FilterQuality.high, gaplessPlayback: true, errorBuilder: (_, __, ___) => const ColoredBox(color: AppColors.brown, child: Center(child: Icon(Icons.restaurant, color: Colors.white)))),
-                      ),
-                    );
-                  },
-                ),
+              Stack(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: PageView.builder(
+                      controller: sliderController,
+                      itemCount: latest.length,
+                      itemBuilder: (context, index) {
+                        final recipe = latest[index];
+                        return InkWell(
+                          onTap: () => open(RecipeDetailsScreen(recipe: recipe)),
+                          child: recipe.imageUrl.isEmpty
+                              ? const ColoredBox(color: AppColors.brown, child: Center(child: Icon(Icons.restaurant, color: Colors.white)))
+                              : Image.network(recipe.imageUrl, width: double.infinity, fit: BoxFit.cover, filterQuality: FilterQuality.high, gaplessPlayback: true, errorBuilder: (_, __, ___) => const ColoredBox(color: AppColors.brown, child: Center(child: Icon(Icons.restaurant, color: Colors.white)))),
+                        );
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    left: 12,
+                    bottom: 12,
+                    child: IconButton(
+                      onPressed: () {
+                        final current = sliderController.hasClients ? (sliderController.page?.round() ?? 0) : 0;
+                        sliderController.animateToPage(current == 0 ? latest.length - 1 : current - 1, duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+                      },
+                      style: IconButton.styleFrom(backgroundColor: Colors.black.withValues(alpha: .45), foregroundColor: Colors.white),
+                      icon: const Icon(Icons.chevron_left),
+                    ),
+                  ),
+                  Positioned(
+                    right: 12,
+                    bottom: 12,
+                    child: IconButton(
+                      onPressed: () {
+                        final current = sliderController.hasClients ? (sliderController.page?.round() ?? 0) : 0;
+                        sliderController.animateToPage(current == latest.length - 1 ? 0 : current + 1, duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+                      },
+                      style: IconButton.styleFrom(backgroundColor: Colors.black.withValues(alpha: .45), foregroundColor: Colors.white),
+                      icon: const Icon(Icons.chevron_right),
+                    ),
+                  ),
+                ],
               ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: TextField(
                 controller: search,
                 onChanged: (v) => setState(() => query = v.trim()),
@@ -152,17 +177,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             if (query.isEmpty && categories.isNotEmpty) ...[
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: heading('التصنيفات', () => open(const CategoriesScreen()))),
+              Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 6), child: heading('التصنيفات', () => open(const CategoriesScreen()))),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: categories.map((c) => Expanded(child: InkWell(onTap: () => open(CategoriesScreen(category: c)), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6), child: Column(mainAxisSize: MainAxisSize.min, children: [
+                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: categories.map((c) => Expanded(child: InkWell(onTap: () => open(CategoriesScreen(category: c)), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4), child: Column(mainAxisSize: MainAxisSize.min, children: [
                   Container(width: 58, height: 58, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 12, offset: const Offset(0, 4))]), child: const Center(child: Icon(Icons.restaurant_menu, color: AppColors.brown))),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(c, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.darkBrown)),
                 ]))))).toList()),
               ),
             ],
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: heading(query.isEmpty ? 'كل الوصفات' : 'نتائج البحث', () => open(const CategoriesScreen()))),
+            Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 6), child: heading(query.isEmpty ? 'كل الوصفات' : 'نتائج البحث', () => open(const CategoriesScreen()))),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(children: [
