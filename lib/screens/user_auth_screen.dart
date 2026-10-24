@@ -54,7 +54,9 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
         ),
       );
       if (!mounted || Supabase.instance.client.auth.currentUser?.id != user.id) return;
-      try { await prefs?.setBool(key, true); } catch (_) {}
+      try {
+        await prefs?.setBool(key, true);
+      } catch (_) {}
       if (!mounted) return;
       if (openChannel == true) {
         try {
