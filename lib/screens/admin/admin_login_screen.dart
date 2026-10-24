@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/supabase_service.dart';
-import 'recipe_management_screen.dart';
+import 'admin_dashboard_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -27,7 +27,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         throw Exception('هذا الحساب غير مخوّل بإدارة الوصفات');
       }
       if (!mounted) return;
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RecipeManagementScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen()));
     } catch (e) {
       setState(() => error = e.toString());
     } finally {

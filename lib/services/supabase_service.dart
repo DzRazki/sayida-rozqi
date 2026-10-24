@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/recipe.dart';
 
 class SupabaseService {
+  static SupabaseClient get client => Supabase.instance.client;
   static final _client = Supabase.instance.client;
 
   static Future<List<Recipe>> fetchRecipes({bool admin = false}) async {

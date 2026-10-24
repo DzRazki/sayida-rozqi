@@ -4,7 +4,6 @@ import '../services/supabase_service.dart';
 import '../theme.dart';
 import '../widgets/recipe_card.dart';
 import 'admin/admin_login_screen.dart';
-import 'admin/recipe_management_screen.dart';
 import 'categories_screen.dart';
 import 'favorites_screen.dart';
 import 'notifications_screen.dart';
@@ -22,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Recipe> recipes = [];
   bool loading = true;
   String query = '';
+  int adminTaps = 0;
 
   @override
   void initState() {
@@ -35,6 +35,14 @@ class _HomeScreenState extends State<HomeScreen> {
       recipes = await SupabaseService.fetchRecipes();
     } catch (_) {}
     if (mounted) setState(() => loading = false);
+  }
+
+  void _secretAdminTap() {
+    adminTaps++;
+    if (adminTaps >= 20) {
+      adminTaps = 0;
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminLoginScreen()));
+    }
   }
 
   List<Recipe> get filtered => recipes.where((r) => r.name.contains(query)).toList();
@@ -57,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFFF8F4EF),
       appBar: AppBar(
         backgroundColor: AppColors.darkBrown,
-        title: const Text('السيدة رزقي', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)),
+        title: GestureDetector(onTap: _secretAdminTap, child: const Text('السيدة رزقي', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold))),
         actions: [IconButton(icon: const Icon(Icons.notifications_none, color: Colors.white), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())))],
       ),
       body: RefreshIndicator(
@@ -96,13 +104,11 @@ class _HomeScreenState extends State<HomeScreen> {
         onDestinationSelected: (index) {
           if (index == 1) Navigator.push(context, MaterialPageRoute(builder: (_) => const YouTubeChannelScreen()));
           if (index == 2) Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()));
-          if (index == 3) Navigator.push(context, MaterialPageRoute(builder: (_) => SupabaseService.isAdmin() ? const RecipeManagementScreen() : const AdminLoginScreen()));
         },
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'الرئيسية'),
           NavigationDestination(icon: Icon(Icons.play_circle_outline), selectedIcon: Icon(Icons.play_circle), label: 'القناة'),
           NavigationDestination(icon: Icon(Icons.favorite_border), selectedIcon: Icon(Icons.favorite), label: 'المفضلة'),
-          NavigationDestination(icon: Icon(Icons.admin_panel_settings_outlined), selectedIcon: Icon(Icons.admin_panel_settings), label: 'الإدارة'),
         ],
       ),
     );
