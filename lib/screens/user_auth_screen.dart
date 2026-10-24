@@ -26,7 +26,9 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
 
   Future<void> finishSignIn() async {
     final user = Supabase.instance.client.auth.currentUser;
-    if (user == null || !mounted) return;
+    if (user == null || !mounted) {
+      return;
+    }
     SharedPreferences? prefs;
     bool seen = false;
     final key = 'youtube-channel-invite:${user.id}';
@@ -36,7 +38,9 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
     } catch (_) {
       // An optional invitation must not prevent sign-in.
     }
-    if (!mounted || Supabase.instance.client.auth.currentUser?.id != user.id) return;
+    if (!mounted || Supabase.instance.client.auth.currentUser?.id != user.id) {
+      return;
+    }
     if (!seen) {
       final openChannel = await showDialog<bool>(
         context: context,
@@ -53,22 +57,30 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
           ),
         ),
       );
-      if (!mounted || Supabase.instance.client.auth.currentUser?.id != user.id) return;
+      if (!mounted || Supabase.instance.client.auth.currentUser?.id != user.id) {
+        return;
+      }
       try {
         await prefs?.setBool(key, true);
       } catch (_) {}
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (openChannel == true) {
         try {
           final launched = await launchUrl(
             Uri.parse('https://www.youtube.com/@chef4razki'),
             mode: LaunchMode.externalApplication,
           );
-          if (!launched) throw StateError('Channel could not be opened');
+          if (!launched) {
+            throw StateError('Channel could not be opened');
+          }
         } catch (_) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('تعذر فتح YouTube. يمكنك زيارة القناة لاحقًا من تبويب القناة.'),
-          ));
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('تعذر فتح YouTube. يمكنك زيارة القناة لاحقًا من تبويب القناة.'),
+            ));
+          }
         }
       }
     }
@@ -78,8 +90,13 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
   }
 
   Future<void> submit() async {
-    if (busy || !form.currentState!.validate()) return;
-    setState(() { busy = true; message = null; });
+    if (busy || !form.currentState!.validate()) {
+      return;
+    }
+    setState(() {
+      busy = true;
+      message = null;
+    });
     try {
       final auth = Supabase.instance.client.auth;
       if (auth.currentUser != null) {
@@ -89,7 +106,9 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
       final result = register
           ? await auth.signUp(email: email.text.trim(), password: password.text)
           : await auth.signInWithPassword(email: email.text.trim(), password: password.text);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (result.session != null) {
         await finishSignIn();
       } else {
@@ -99,11 +118,17 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
         });
       }
     } on AuthException catch (error) {
-      if (mounted) setState(() => message = 'تعذر إكمال الطلب: ${error.message}');
+      if (mounted) {
+        setState(() => message = 'تعذر إكمال الطلب: ${error.message}');
+      }
     } catch (_) {
-      if (mounted) setState(() => message = 'تعذر الاتصال. تحققي من الإنترنت وحاولي مجددًا.');
+      if (mounted) {
+        setState(() => message = 'تعذر الاتصال. تحققي من الإنترنت وحاولي مجددًا.');
+      }
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (mounted) {
+        setState(() => busy = false);
+      }
     }
   }
 
@@ -133,8 +158,12 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
           autocorrect: false, enableSuggestions: false,
           decoration: const InputDecoration(labelText: 'كلمة المرور'),
           validator: (value) {
-            if (value == null || value.isEmpty) return 'أدخلي كلمة المرور';
-            if (register && value.length < 8) return 'استخدمي 8 أحرف على الأقل';
+            if (value == null || value.isEmpty) {
+              return 'أدخلي كلمة المرور';
+            }
+            if (register && value.length < 8) {
+              return 'استخدمي 8 أحرف على الأقل';
+            }
             return null;
           },
         ),
