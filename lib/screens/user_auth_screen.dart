@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,6 +11,9 @@ class UserAuthScreen extends StatefulWidget {
 }
 
 class _UserAuthScreenState extends State<UserAuthScreen> {
+  static const _googleWebClientId =
+      '727229417562-vo4rkvh6vj6n83mkq1q5mr4mojlhdjjr.apps.googleusercontent.com';
+
   final email = TextEditingController();
   final password = TextEditingController();
   final form = GlobalKey<FormState>();
@@ -86,6 +90,46 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
     }
     if (mounted && Supabase.instance.client.auth.currentUser?.id == user.id) {
       Navigator.of(context).pop(true);
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    if (busy) {
+      return;
+    }
+    setState(() {
+      busy = true;
+      message = null;
+    });
+    try {
+      final googleSignIn = GoogleSignIn(
+        serverClientId: _googleWebClientId,
+      );
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        return;
+      }
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+      if (idToken == null || idToken.isEmpty) {
+        throw StateError('Google did not return an ID token');
+      }
+      await Supabase.instance.client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: googleAuth.accessToken,
+      );
+      await finishSignIn();
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          message = 'تعذر تسجيل الدخول باستخدام Google. تأكدي من اتصال الإنترنت وحاولي مجددًا.';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => busy = false);
+      }
     }
   }
 
@@ -171,6 +215,22 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
         if (message != null) ...[Text(message!), const SizedBox(height: 12)],
         if (busy) const LinearProgressIndicator(),
         FilledButton(onPressed: busy ? null : submit, child: Text(register ? 'إنشاء حساب' : 'دخول')),
+        const SizedBox(height: 12),
+        Row(children: [
+          const Expanded(child: Divider()),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text('أو', style: Theme.of(context).textTheme.bodySmall),
+          ),
+          const Expanded(child: Divider()),
+        ]),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: busy ? null : signInWithGoogle,
+          icon: const Icon(Icons.login),
+          label: const Text('المتابعة باستخدام Google'),
+        ),
+        const SizedBox(height: 8),
         TextButton(onPressed: busy ? null : () => setState(() { register = !register; message = null; }), child: Text(register ? 'لديّ حساب بالفعل' : 'إنشاء حساب جديد')),
       ])),
     ),
