@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../services/favorites_service.dart';
 import '../services/supabase_service.dart';
+import '../theme.dart';
 import '../widgets/recipe_card.dart';
 import 'user_auth_screen.dart';
 
@@ -52,17 +53,33 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget build(BuildContext context) {
     final user = SupabaseService.client.auth.currentUser;
     return Scaffold(
+      backgroundColor: AppColors.cream,
       appBar: AppBar(title: const Text('وصفاتي المفضلة'), actions: [IconButton(onPressed: loading || importing ? null : load, icon: const Icon(Icons.refresh))]),
       body: Column(children: [
-        if (user == null) ListTile(title: const Text('المفضلة محفوظة على هذا الهاتف فقط'), subtitle: const Text('سجّلي الدخول للمزامنة، ثم اختاري استيراد المفضلة المحلية إن رغبتِ.'), trailing: TextButton(onPressed: () async {
-          await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const UserAuthScreen()));
-          if (mounted) await load();
-        }, child: const Text('دخول'))),
-        if (user != null) Padding(padding: const EdgeInsets.all(8), child: Text('مفضلة حساب: ${user.email ?? ''}')),
-        if (offerImport && !loading) ListTile(title: const Text('توجد مفضلة قديمة على هذا الهاتف'), trailing: TextButton(onPressed: importing ? null : importFavorites, child: const Text('استيراد'))),
-        if (importing) const LinearProgressIndicator(),
-        Expanded(child: loading ? const Center(child: CircularProgressIndicator()) : error != null
-          ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(error!), TextButton(onPressed: load, child: const Text('إعادة المحاولة'))]))
+        if (user == null) Container(
+          margin: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 18, offset: const Offset(0, 6))]),
+          child: Row(children: [
+            const Icon(Icons.favorite_border, color: AppColors.gold),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('المفضلة محفوظة على هذا الهاتف فقط', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBrown)), const SizedBox(height: 4), const Text('سجّلي الدخول للمزامنة، ثم اختاري استيراد المفضلة المحلية إن رغبتِ.', style: TextStyle(color: AppColors.brown))])),
+            TextButton(onPressed: () async {
+              await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const UserAuthScreen()));
+              if (mounted) await load();
+            }, child: const Text('دخول', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold))),
+          ]),
+        ),
+        if (user != null) Padding(padding: const EdgeInsets.all(12), child: Text('مفضلة حساب: ${user.email ?? ''}', style: const TextStyle(color: AppColors.brown))),
+        if (offerImport && !loading) Container(
+          margin: const EdgeInsets.symmetric(horizontal: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(color: AppColors.gold.withValues(alpha: .15), borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [const Icon(Icons.download, color: AppColors.darkBrown), const SizedBox(width: 10), const Expanded(child: Text('توجد مفضلة قديمة على هذا الهاتف', style: TextStyle(color: AppColors.darkBrown))), TextButton(onPressed: importing ? null : importFavorites, child: const Text('استيراد', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)))]),
+        ),
+        if (importing) const LinearProgressIndicator(color: AppColors.gold),
+        Expanded(child: loading ? const Center(child: CircularProgressIndicator(color: AppColors.gold)) : error != null
+          ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(error!, textAlign: TextAlign.center), TextButton(onPressed: load, child: const Text('إعادة المحاولة', style: TextStyle(color: AppColors.gold)))]))
           : items.isEmpty ? const Center(child: Text('لا توجد وصفات محفوظة بعد'))
           : RefreshIndicator(onRefresh: load, child: GridView.count(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(14), crossAxisCount: 2, mainAxisSpacing: 12, crossAxisSpacing: 12, childAspectRatio: .72, children: items.map((r) => RecipeCard(key: ValueKey(r.id), recipe: r)).toList()))),
       ]),
