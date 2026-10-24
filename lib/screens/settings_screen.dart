@@ -36,60 +36,92 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Widget tile({required IconData icon, required String title, String? subtitle, Widget? trailing, VoidCallback? onTap}) => Container(
+    margin: const EdgeInsets.only(bottom: 12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 18, offset: const Offset(0, 6))],
+    ),
+    child: ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: Container(width: 44, height: 44, decoration: BoxDecoration(color: AppColors.gold.withValues(alpha: .18), borderRadius: BorderRadius.circular(14)), child: Icon(icon, color: AppColors.darkBrown)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
+      subtitle: subtitle == null ? null : Text(subtitle, style: const TextStyle(color: AppColors.brown)),
+      trailing: trailing ?? const Icon(Icons.chevron_left, color: AppColors.gold),
+      onTap: onTap,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) => Scaffold(
+    backgroundColor: AppColors.cream,
     appBar: AppBar(title: const Text('الإعدادات')),
     body: StreamBuilder<AuthState>(
       stream: SupabaseService.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
         final user = SupabaseService.client.auth.currentUser;
-        return ListView(padding: const EdgeInsets.all(16), children: [
-          const CircleAvatar(radius: 38, backgroundColor: AppColors.gold, child: Text('🍲', style: TextStyle(fontSize: 32))),
-          const SizedBox(height: 12),
-          const Center(child: Text('السيدة رزقي', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
-          const SizedBox(height: 20),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: user == null
-              ? ListTile(
-                  leading: const Icon(Icons.person_add_alt_1),
-                  title: const Text('تسجيل الدخول / إنشاء حساب'),
-                  subtitle: const Text('احفظي تفاعلاتك باسم حسابك'),
-                  trailing: const Icon(Icons.chevron_left),
-                  onTap: () async {
-                    await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const UserAuthScreen()));
-                    if (mounted) setState(() {});
-                  },
-                )
-              : ListTile(
-                  leading: const Icon(Icons.account_circle_outlined),
-                  title: const Text('حسابي'),
-                  subtitle: Text(user.email ?? 'حساب مسجّل'),
-                  isThreeLine: false,
-                ),
-          ),
-          if (user != null) Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: ListTile(
-              leading: signingOut ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.logout),
-              title: const Text('تسجيل الخروج'),
-              enabled: !signingOut,
+        return ListView(
+          padding: const EdgeInsets.all(18),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .07), blurRadius: 22, offset: const Offset(0, 8))],
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: 84,
+                    height: 84,
+                    decoration: BoxDecoration(color: AppColors.gold.withValues(alpha: .18), shape: BoxShape.circle),
+                    child: const Center(child: Text('🍲', style: TextStyle(fontSize: 36))),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text('السيدة رزقي', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
+                  const SizedBox(height: 6),
+                  const Text('تطبيق وصفات جزائرية أصيلة', style: TextStyle(color: AppColors.brown)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            if (user == null) tile(
+              icon: Icons.person_add_alt_1,
+              title: 'تسجيل الدخول / إنشاء حساب',
+              subtitle: 'احفظي تفاعلاتك باسم حسابك',
+              onTap: () async {
+                await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const UserAuthScreen()));
+                if (mounted) setState(() {});
+              },
+            ) else tile(
+              icon: Icons.account_circle_outlined,
+              title: 'حسابي',
+              subtitle: user.email ?? 'حساب مسجّل',
+              trailing: const SizedBox.shrink(),
+            ),
+            if (user != null) tile(
+              icon: Icons.logout,
+              title: 'تسجيل الخروج',
+              subtitle: 'تسجيل الخروج من هذا الجهاز',
+              trailing: signingOut ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold)) : const Icon(Icons.chevron_left, color: AppColors.gold),
               onTap: signingOut ? null : signOut,
             ),
-          ),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: ListTile(
-              leading: const Icon(Icons.admin_panel_settings),
-              title: const Text('منطقة الإدارة'),
+            tile(
+              icon: Icons.admin_panel_settings,
+              title: 'منطقة الإدارة',
+              subtitle: 'إدارة الوصفات والإحصائيات',
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SupabaseService.isAdmin() ? const RecipeManagementScreen() : const AdminLoginScreen())),
             ),
-          ),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: const ListTile(leading: Icon(Icons.info_outline), title: Text('حول التطبيق'), subtitle: Text('تطبيق وصفات جزائرية أصيلة')),
-          ),
-        ]);
+            tile(
+              icon: Icons.info_outline,
+              title: 'حول التطبيق',
+              subtitle: 'تطبيق وصفات جزائرية أصيلة',
+              trailing: const SizedBox.shrink(),
+            ),
+          ],
+        );
       },
     ),
   );
