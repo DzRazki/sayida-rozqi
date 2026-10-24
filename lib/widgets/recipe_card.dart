@@ -7,44 +7,171 @@ import '../screens/recipe_details_screen.dart';
 class RecipeCard extends StatefulWidget {
   final Recipe recipe;
   final bool large;
+
   const RecipeCard({super.key, required this.recipe, this.large = false});
+
   @override
   State<RecipeCard> createState() => _RecipeCardState();
 }
+
 class _RecipeCardState extends State<RecipeCard> {
-  bool favorite = false, saving = false;
+  bool favorite = false;
   int generation = 0;
+
   @override
-  void initState() { super.initState(); FavoritesService.changes.addListener(changed); _load(); }
+  void initState() {
+    super.initState();
+    FavoritesService.changes.addListener(_onFavoritesChanged);
+    _loadFavorite();
+  }
+
   @override
-  void dispose() { FavoritesService.changes.removeListener(changed); super.dispose(); }
-  void changed() { if (mounted) setState(() => favorite = false); _load(); }
-  Future<void> _load() async {
+  void dispose() {
+    FavoritesService.changes.removeListener(_onFavoritesChanged);
+    super.dispose();
+  }
+
+  void _onFavoritesChanged() {
+    if (mounted) {
+      setState(() => favorite = false);
+    }
+    _loadFavorite();
+  }
+
+  Future<void> _loadFavorite() async {
     final token = ++generation;
     try {
       final value = await FavoritesService.isFavorite(widget.recipe.id);
-      if (mounted && token == generation) setState(() => favorite = value);
-    } catch (_) { if (mounted && token == generation) setState(() => favorite = false); }
+      if (mounted && token == generation) {
+        setState(() => favorite = value);
+      }
+    } catch (_) {
+      if (mounted && token == generation) {
+        setState(() => favorite = false);
+      }
+    }
   }
-  Future<void> _toggle() async {
-    if (saving) return;
-    setState(() => saving = true);
-    try { await FavoritesService.toggle(widget.recipe.id); await _load(); } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تعذر حفظ المفضلة. تحققي من الاتصال وحاولي مجددًا.')));
-    } finally { if (mounted) setState(() => saving = false); }
-  }
+
   @override
   Widget build(BuildContext context) {
     final recipe = widget.recipe;
+
     return GestureDetector(
-      onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailsScreen(recipe: recipe))); if (mounted) await _load(); },
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => RecipeDetailsScreen(recipe: recipe),
+          ),
+        );
+        if (mounted) {
+          await _loadFavorite();
+        }
+      },
       child: Container(
         clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .08), blurRadius: 14, offset: const Offset(0, 5))]),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          AspectRatio(aspectRatio: widget.large ? 16 / 9 : 4 / 3, child: recipe.imageUrl.isEmpty ? Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 40)))) : ClipRect(child: Image.network(recipe.imageUrl, width: double.infinity, height: double.infinity, fit: BoxFit.cover, alignment: Alignment.center, filterQuality: FilterQuality.medium, gaplessPlayback: true, errorBuilder: (_, __, ___) => Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 40)))))),
-          Padding(padding: const EdgeInsets.all(10), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Tooltip(message: recipe.name, triggerMode: TooltipTriggerMode.tap, child: Text(recipe.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: widget.large ? 16 : 13, fontWeight: FontWeight.bold))), const SizedBox(height: 4), Row(children: [const Icon(Icons.schedule, size: 13, color: AppColors.muted), const SizedBox(width: 4), Text('${recipe.time} د', style: const TextStyle(fontSize: 10, color: AppColors.muted)), const SizedBox(width: 10), const Icon(Icons.group, size: 13, color: AppColors.muted), const SizedBox(width: 4), Text('${recipe.servings} أشخاص', style: const TextStyle(fontSize: 10, color: AppColors.muted))])])),
-        ]),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 14,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: widget.large ? 16 / 9 : 4 / 3,
+              child: recipe.imageUrl.isEmpty
+                  ? Container(
+                      color: AppColors.brown,
+                      child: const Center(
+                        child: Text(
+                          '🍽️',
+                          style: TextStyle(fontSize: 40),
+                        ),
+                      ),
+                    )
+                  : ClipRect(
+                      child: Image.network(
+                        recipe.imageUrl,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
+                        filterQuality: FilterQuality.medium,
+                        gaplessPlayback: true,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: AppColors.brown,
+                          child: const Center(
+                            child: Text(
+                              '🍽️',
+                              style: TextStyle(fontSize: 40),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Tooltip(
+                    message: recipe.name,
+                    triggerMode: TooltipTriggerMode.tap,
+                    child: Text(
+                      recipe.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: widget.large ? 16 : 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.schedule,
+                        size: 13,
+                        color: AppColors.muted,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${recipe.time} د',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Icon(
+                        Icons.group,
+                        size: 13,
+                        color: AppColors.muted,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${recipe.servings} أشخاص',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
