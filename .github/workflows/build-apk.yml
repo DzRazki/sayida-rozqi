@@ -21,9 +21,6 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -53,12 +50,15 @@ jobs:
 
       - name: Print debug APK SHA-1
         run: |
+          set -e
           APK=build/app/outputs/flutter-apk/app-debug.apk
-          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)
+          APKSIGNER=$(find "$ANDROID_HOME" -type f -name apksigner 2>/dev/null | sort -V | tail -n 1)
+          echo "APK: $APK"
+          echo "APKSIGNER: $APKSIGNER"
           "$APKSIGNER" verify --print-certs "$APK" | tee sha1.txt
           echo "=================================================="
           echo "COPY THIS SHA-1 FOR GOOGLE ANDROID OAUTH CLIENT:"
-          grep 'SHA-1 digest' sha1.txt
+          grep -i 'SHA-1 digest' sha1.txt || true
           echo "=================================================="
 
       - name: Rename APK
