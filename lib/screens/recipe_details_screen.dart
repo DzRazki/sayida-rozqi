@@ -13,14 +13,13 @@ import 'user_auth_screen.dart';
 class RecipeDetailsScreen extends StatefulWidget {
   final Recipe recipe;
   const RecipeDetailsScreen({super.key, required this.recipe});
-
   @override
   State<RecipeDetailsScreen> createState() => _RecipeDetailsScreenState();
 }
 
 class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   bool favorite = false, busy = true, available = false;
-  bool videoLoading = false;
+  bool videoLoading = false, titleExpanded = false;
   String? selected, error, videoError;
   RecipeStats stats = const RecipeStats(views: 0, likes: 0, dislikes: 0);
   WebViewController? video;
@@ -127,12 +126,19 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       style: FilledButton.styleFrom(
         backgroundColor: selected == choice ? AppColors.gold.withValues(alpha: .22) : Colors.white,
         foregroundColor: AppColors.darkBrown,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       icon: Icon(selected == choice ? filled : outline, color: selected == choice ? AppColors.gold : AppColors.brown),
       label: Text(available ? '$count' : (choice == 'like' ? 'إعجاب' : 'عدم إعجاب')),
     ),
+  );
+
+  Widget panel(Widget child) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+    child: child,
   );
 
   @override
@@ -140,128 +146,120 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     final recipe = widget.recipe;
     return Scaffold(
       backgroundColor: AppColors.cream,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: MediaQuery.of(context).size.width * .75,
-            pinned: true,
-            backgroundColor: AppColors.darkBrown,
-            actions: [
-              IconButton(
-                onPressed: toggleFavorite,
-                icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: AppColors.gold),
+      appBar: AppBar(
+        backgroundColor: AppColors.darkBrown,
+        foregroundColor: AppColors.gold,
+        actions: [IconButton(
+          onPressed: toggleFavorite,
+          icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: AppColors.gold),
+        )],
+      ),
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          if (recipe.imageUrl.isNotEmpty)
+            Image.network(
+              recipe.imageUrl,
+              width: double.infinity,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+              gaplessPlayback: true,
+              errorBuilder: (_, __, ___) => const SizedBox(
+                height: 80,
+                child: Center(child: Icon(Icons.broken_image_outlined, color: AppColors.brown)),
               ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: recipe.imageUrl.isEmpty
-                  ? Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 60))))
-                  : Image.network(
-                      recipe.imageUrl,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.high,
-                      gaplessPlayback: true,
-                      errorBuilder: (_, __, ___) => Container(color: AppColors.brown),
-                    ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(recipe.name, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
-                  const SizedBox(height: 14),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 18, offset: const Offset(0, 6))],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _info(Icons.category, recipe.category),
-                        _info(Icons.timer, '${recipe.time} دقيقة'),
-                        _info(Icons.group, '${recipe.servings} أشخاص'),
-                        _info(Icons.visibility, available ? '${stats.views}' : '—'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 18, offset: const Offset(0, 6))],
-                    ),
-                    child: Text(recipe.description, style: const TextStyle(height: 1.7, color: AppColors.darkBrown)),
-                  ),
-                  const SizedBox(height: 18),
-                  if (busy) const LinearProgressIndicator(color: AppColors.gold),
-                  const SizedBox(height: 14),
-                  Row(children: [
-                    reaction('like', Icons.thumb_up_outlined, Icons.thumb_up, stats.likes),
-                    const SizedBox(width: 10),
-                    reaction('dislike', Icons.thumb_down_outlined, Icons.thumb_down, stats.dislikes),
-                  ]),
-                  if (error != null) ...[
-                    const SizedBox(height: 10),
-                    Text(error!, style: const TextStyle(color: Colors.red)),
-                  ],
-                  TextButton(
-                    onPressed: busy ? null : () => refresh(),
-                    child: const Text('تحديث الإحصائيات', style: TextStyle(color: AppColors.gold)),
-                  ),
-                  const SizedBox(height: 20),
-                  if (recipe.youtubeUrl.trim().isNotEmpty) ...[
-                    const Text('فيديو الوصفة', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
-                    const SizedBox(height: 12),
-                    if (videoLoading) const LinearProgressIndicator(color: AppColors.gold),
-                    if (video != null) LayoutBuilder(builder: (context, constraints) {
-                      final height = constraints.maxWidth / (16 / 9);
-                      return Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(22), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .08), blurRadius: 20, offset: const Offset(0, 6))]),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(22),
-                          child: SizedBox(height: height < 200 ? 200 : height, child: WebViewWidget(controller: video!)),
-                        ),
-                      );
-                    }),
-                    if (videoError != null) Text(videoError!),
-                    TextButton.icon(
-                      onPressed: videoLoading ? null : prepareVideo,
-                      icon: const Icon(Icons.refresh, color: AppColors.gold),
-                      label: const Text('إعادة تحميل الفيديو', style: TextStyle(color: AppColors.gold)),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                  Row(children: [
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => IngredientsScreen(recipe: recipe))),
-                        style: FilledButton.styleFrom(backgroundColor: AppColors.darkBrown, foregroundColor: AppColors.gold, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-                        icon: const Icon(Icons.list_alt),
-                        label: const Text('المكونات'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Semantics(
+                  button: true,
+                  label: titleExpanded ? 'طي عنوان الوصفة' : 'عرض عنوان الوصفة كاملاً',
+                  child: InkWell(
+                    onTap: () => setState(() => titleExpanded = !titleExpanded),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: Text(
+                            recipe.name,
+                            maxLines: titleExpanded ? null : 1,
+                            overflow: titleExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 20, height: 1.3, fontWeight: FontWeight.bold, color: AppColors.darkBrown),
+                          )),
+                          Icon(titleExpanded ? Icons.expand_less : Icons.expand_more, color: AppColors.brown),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PreparationStepsScreen(recipe: recipe))),
-                        style: FilledButton.styleFrom(backgroundColor: AppColors.gold, foregroundColor: AppColors.darkBrown, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-                        icon: const Icon(Icons.soup_kitchen),
-                        label: const Text('التحضير'),
-                      ),
-                    ),
-                  ]),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                panel(Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: _info(Icons.category, recipe.category)),
+                    Expanded(child: _info(Icons.timer, '${recipe.time} دقيقة')),
+                    Expanded(child: _info(Icons.group, '${recipe.servings} أشخاص')),
+                    Expanded(child: _info(Icons.visibility, available ? '${stats.views}' : '—')),
+                  ],
+                )),
+                if (recipe.description.trim().isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  panel(Text(recipe.description, style: const TextStyle(height: 1.4, color: AppColors.darkBrown))),
                 ],
-              ),
+                const SizedBox(height: 8),
+                if (busy) ...[
+                  const LinearProgressIndicator(color: AppColors.gold),
+                  const SizedBox(height: 6),
+                ],
+                Row(children: [
+                  reaction('like', Icons.thumb_up_outlined, Icons.thumb_up, stats.likes),
+                  const SizedBox(width: 8),
+                  reaction('dislike', Icons.thumb_down_outlined, Icons.thumb_down, stats.dislikes),
+                ]),
+                if (error != null) ...[
+                  const SizedBox(height: 6),
+                  Text(error!, style: const TextStyle(color: Colors.red)),
+                ],
+                TextButton(
+                  onPressed: busy ? null : () => refresh(),
+                  child: const Text('تحديث الإحصائيات', style: TextStyle(color: AppColors.gold)),
+                ),
+                if (recipe.youtubeUrl.trim().isNotEmpty) ...[
+                  const Text('فيديو الوصفة', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
+                  const SizedBox(height: 6),
+                  if (videoLoading) const LinearProgressIndicator(color: AppColors.gold),
+                  if (video != null) ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: AspectRatio(aspectRatio: 16 / 9, child: WebViewWidget(controller: video!)),
+                  ),
+                  if (videoError != null) Text(videoError!),
+                  TextButton.icon(
+                    onPressed: videoLoading ? null : prepareVideo,
+                    icon: const Icon(Icons.refresh, color: AppColors.gold),
+                    label: const Text('إعادة تحميل الفيديو', style: TextStyle(color: AppColors.gold)),
+                  ),
+                  const SizedBox(height: 6),
+                ],
+                Row(children: [
+                  Expanded(child: FilledButton.icon(
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => IngredientsScreen(recipe: recipe))),
+                    style: FilledButton.styleFrom(backgroundColor: AppColors.darkBrown, foregroundColor: AppColors.gold, padding: const EdgeInsets.symmetric(vertical: 12)),
+                    icon: const Icon(Icons.list_alt),
+                    label: const Text('المكونات'),
+                  )),
+                  const SizedBox(width: 8),
+                  Expanded(child: FilledButton.icon(
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PreparationStepsScreen(recipe: recipe))),
+                    style: FilledButton.styleFrom(backgroundColor: AppColors.gold, foregroundColor: AppColors.darkBrown, padding: const EdgeInsets.symmetric(vertical: 12)),
+                    icon: const Icon(Icons.soup_kitchen),
+                    label: const Text('التحضير'),
+                  )),
+                ]),
+              ],
             ),
           ),
         ],
@@ -272,8 +270,8 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   Widget _info(IconData icon, String text) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(icon, color: AppColors.gold),
-      const SizedBox(height: 6),
+      Icon(icon, color: AppColors.gold, size: 22),
+      const SizedBox(height: 4),
       Text(text, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.darkBrown, fontWeight: FontWeight.w600, fontSize: 12)),
     ],
   );
