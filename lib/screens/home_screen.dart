@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../services/supabase_service.dart';
 import '../theme.dart';
-import '../widgets/recipe_card.dart';
+import '../widgets/paged_recipes.dart';
 import 'admin/admin_login_screen.dart';
 import 'categories_screen.dart';
 import 'favorites_screen.dart';
@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool loading = true;
   String query = '';
   String? error;
-  int adminTaps = 0;
+  int adminTaps = 0, refreshVersion = 0;
   final search = TextEditingController();
   final PageController sliderController = PageController();
   Timer? sliderTimer;
@@ -41,8 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> load() async {
     setState(() { loading = true; error = null; });
     try {
-      final data = await SupabaseService.fetchRecipes();
-      if (mounted) setState(() => recipes = data);
+      final data = await SupabaseService.fetchRecipes(newestFirst: true);
+      if (mounted) setState(() { recipes = data; refreshVersion++; });
     } catch (_) {
       if (mounted) setState(() => error = 'تعذر تحميل الوصفات. اسحبي لإعادة المحاولة.');
     } finally { if (mounted) setState(() => loading = false); }
@@ -128,11 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
             if (loading) const Center(child: Padding(padding: EdgeInsets.all(28), child: CircularProgressIndicator())),
             if (error != null) Text(error!),
             if (!loading && error == null && items.isEmpty) const Padding(padding: EdgeInsets.all(24), child: Text('لا توجد وصفات مطابقة')),
-            if (!loading) LayoutBuilder(builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 600 ? 3 : 2;
-              final width = (constraints.maxWidth - 14 * (columns - 1)) / columns;
-              return Wrap(spacing: 14, runSpacing: 14, children: items.map((recipe) => SizedBox(width: width, child: RecipeCard(key: ValueKey(recipe.id), recipe: recipe))).toList());
-            }),
+            if (!loading && error == null && items.isNotEmpty)
+              PagedRecipes(key: ValueKey('$refreshVersion:$query'), recipes: items),
           ])),
         ],
       )),

@@ -5,7 +5,21 @@ class SupabaseService {
   static SupabaseClient get client => Supabase.instance.client;
   static final _client = Supabase.instance.client;
 
-  static Future<List<Recipe>> fetchRecipes({bool admin = false}) async {
+  static Future<List<Recipe>> fetchRecipes({bool admin = false, bool newestFirst = false}) async {
+    if (newestFirst) {
+      final recipes = <Recipe>[];
+      const batchSize = 200;
+      int offset = 0;
+      while (true) {
+        var query = _client.from('recipes').select('*');
+        if (!admin) query = query.eq('published', true);
+        final data = await query.order('created_at', ascending: false).order('id', ascending: false).range(offset, offset + batchSize - 1);
+        recipes.addAll(data.map<Recipe>((item) => Recipe.fromJson(item)));
+        if (data.length < batchSize) break;
+        offset += batchSize;
+      }
+      return recipes;
+    }
     var query = _client.from('recipes').select('*');
     if (!admin) query = query.eq('published', true);
     final data = await query.order('featured', ascending: false).order('created_at', ascending: false);
