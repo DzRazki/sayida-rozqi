@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserAuthScreen extends StatefulWidget {
   const UserAuthScreen({super.key});
@@ -22,13 +24,62 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
     super.dispose();
   }
 
+  Future<void> finishSignIn() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null || !mounted) return;
+    SharedPreferences? prefs;
+    bool seen = false;
+    final key = 'youtube-channel-invite:${user.id}';
+    try {
+      prefs = await SharedPreferences.getInstance();
+      seen = prefs.getBool(key) ?? false;
+    } catch (_) {
+      // An optional invitation must not prevent sign-in.
+    }
+    if (!mounted || Supabase.instance.client.auth.currentUser?.id != user.id) return;
+    if (!seen) {
+      final openChannel = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            icon: const Icon(Icons.play_circle_fill, color: Colors.red, size: 40),
+            title: const Text('تابعي وصفات السيدة رزقي على YouTube'),
+            content: const Text('افتحي القناة واضغطي زر الاشتراك في YouTube إذا رغبتِ. المتابعة اختيارية ولا تؤثر على استخدام التطبيق.'),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('لاحقًا')),
+              FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('فتح القناة للاشتراك')),
+            ],
+          ),
+        ),
+      );
+      if (!mounted || Supabase.instance.client.auth.currentUser?.id != user.id) return;
+      try { await prefs?.setBool(key, true); } catch (_) {}
+      if (!mounted) return;
+      if (openChannel == true) {
+        try {
+          final launched = await launchUrl(
+            Uri.parse('https://www.youtube.com/@chef4razki'),
+            mode: LaunchMode.externalApplication,
+          );
+          if (!launched) throw StateError('Channel could not be opened');
+        } catch (_) {
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('تعذر فتح YouTube. يمكنك زيارة القناة لاحقًا من تبويب القناة.'),
+          ));
+        }
+      }
+    }
+    if (mounted && Supabase.instance.client.auth.currentUser?.id == user.id) Navigator.of(context).pop(true);
+  }
+
   Future<void> submit() async {
     if (busy || !form.currentState!.validate()) return;
     setState(() { busy = true; message = null; });
     try {
       final auth = Supabase.instance.client.auth;
       if (auth.currentUser != null) {
-        if (mounted) Navigator.of(context).pop(true);
+        await finishSignIn();
         return;
       }
       final result = register
@@ -36,7 +87,7 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
           : await auth.signInWithPassword(email: email.text.trim(), password: password.text);
       if (!mounted) return;
       if (result.session != null) {
-        Navigator.of(context).pop(true);
+        await finishSignIn();
       } else {
         setState(() {
           message = 'راجعي بريدك لتأكيد الحساب، ثم عودي لتسجيل الدخول. إذا لم تصلك رسالة، تحققي من البريد غير المرغوب فيه.';
