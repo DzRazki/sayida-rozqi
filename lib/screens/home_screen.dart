@@ -9,6 +9,7 @@ import 'favorites_screen.dart';
 import 'notifications_screen.dart';
 import 'recipe_details_screen.dart';
 import 'youtube_channel_screen.dart';
+import 'account_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -93,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }),
         const SizedBox(height: 16),
       ])),
-      bottomNavigationBar: NavigationBar(indicatorColor: AppColors.gold.withValues(alpha: .25), selectedIndex: 0, onDestinationSelected: (i) { if (i == 1) open(const YouTubeChannelScreen()); if (i == 2) open(const FavoritesScreen()); }, destinations: const [NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'الرئيسية'), NavigationDestination(icon: Icon(Icons.play_circle_outline), label: 'القناة'), NavigationDestination(icon: Icon(Icons.favorite_border), label: 'المفضلة')]),
+      bottomNavigationBar: NavigationBar(indicatorColor: AppColors.gold.withValues(alpha: .25), selectedIndex: 0, onDestinationSelected: (i) { if (i == 1) open(const YouTubeChannelScreen()); if (i == 2) open(const FavoritesScreen()); if (i == 3) open(const AccountScreen()); }, destinations: const [NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'الرئيسية'), NavigationDestination(icon: Icon(Icons.play_circle_outline), label: 'القناة'), NavigationDestination(icon: Icon(Icons.favorite_border), label: 'المفضلة'), NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'حسابي')]),
     );
   }
 }
