@@ -218,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircleAvatar(radius: 26, backgroundColor: Colors.white, child: Icon(Icons.restaurant_menu, color: AppColors.brown)),
+                          const CircleAvatar(radius: 26, backgroundColor: Colors.white, child: Icon(Icons.restaurant_menu, color: AppColors.brown)),
                           const SizedBox(height: 6),
                           Text(c, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.darkBrown)),
                         ],
