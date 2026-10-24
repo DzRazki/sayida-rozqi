@@ -48,6 +48,15 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug
 
+      - name: Print debug APK SHA-1
+        run: |
+          APK=build/app/outputs/flutter-apk/app-debug.apk
+          keytool -printcert -jarfile "$APK" | tee sha1.txt
+          echo "=================================================="
+          echo "COPY THIS SHA-1 FOR GOOGLE ANDROID OAUTH CLIENT:"
+          grep 'SHA1:' sha1.txt
+          echo "=================================================="
+
       - name: Rename APK
         run: |
           mkdir -p release
