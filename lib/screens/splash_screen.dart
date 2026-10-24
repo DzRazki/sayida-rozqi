@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme.dart';
 import 'welcome_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -10,10 +9,13 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  static const String splashImageUrl =
+      'https://raw.githubusercontent.com/doukara983-a11y/recipe-app-design/efcf3d7981533578b9c74b503c674d0b8122c4f6/file_0000000069288243a9f2ec6d8458d5a1.png';
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const WelcomeScreen()),
@@ -24,26 +26,31 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkBrown,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 118,
-              height: 118,
-              decoration: BoxDecoration(
-                color: AppColors.gold,
-                shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .25), blurRadius: 24)],
+      backgroundColor: const Color(0xFF2A1B12),
+      body: SizedBox.expand(
+        child: Image.network(
+          splashImageUrl,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          gaplessPlayback: true,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFFD4AF37)),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(
+              child: Text(
+                'السيدة رزقي',
+                style: TextStyle(
+                  color: Color(0xFFD4AF37),
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              child: const Center(child: Text('🍲', style: TextStyle(fontSize: 54))),
-            ),
-            const SizedBox(height: 24),
-            const Text('السيدة رزقي', style: TextStyle(color: AppColors.gold, fontSize: 30, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            const Text('وصفات جزائرية أصيلة', style: TextStyle(color: Colors.white70)),
-          ],
+            );
+          },
         ),
       ),
     );
