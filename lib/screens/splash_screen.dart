@@ -1,86 +1,62 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../theme.dart';
+import '../widgets/brand_logo.dart';
+import 'home_screen.dart';
 import 'welcome_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
+  final bool showWelcome;
+  const SplashScreen({super.key, this.showWelcome = true});
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
-
 class _SplashScreenState extends State<SplashScreen> {
+  Timer? timer;
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
+    timer = Timer(const Duration(milliseconds: 1800), () {
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-      );
+      Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
+        builder: (_) => widget.showWelcome ? const WelcomeScreen() : const HomeScreen(),
+      ));
     });
   }
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF2A1B12), Color(0xFF5A3423)],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
+  void dispose() { timer?.cancel(); super.dispose(); }
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: AppColors.darkBrown,
+    body: Container(
+      width: double.infinity, height: double.infinity,
+      decoration: const BoxDecoration(gradient: RadialGradient(
+        colors: [Color(0xFF593A24), Color(0xFF21150F)], radius: 1.1,
+      )),
+      child: SafeArea(child: LayoutBuilder(builder: (context, constraints) {
+        final size = (constraints.maxWidth * .78).clamp(140.0, 320.0).toDouble();
+        return SingleChildScrollView(child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Padding(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24), child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 128,
-                height: 128,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFD4AF37),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: .28),
-                      blurRadius: 32,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Text('🍲', style: TextStyle(fontSize: 56)),
-                ),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: 1),
+                duration: Duration(milliseconds: MediaQuery.of(context).disableAnimations ? 0 : 650),
+                builder: (context, value, child) => Opacity(opacity: value, child: child),
+                child: BrandLogo(size: size),
               ),
+              const SizedBox(height: 20),
+              const Text('وصفات أصيلة… بطعم البيت', textAlign: TextAlign.center,
+                style: TextStyle(color: Color(0xFFF6E9D3), fontSize: 18, height: 1.5)),
               const SizedBox(height: 28),
-              const Text(
-                'السيدة رزقي',
-                style: TextStyle(
-                  color: Color(0xFFD4AF37),
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'وصفات جزائرية أصلية',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-              const SizedBox(height: 42),
-              const SizedBox(
-                width: 150,
-                child: LinearProgressIndicator(
-                  minHeight: 4,
-                  backgroundColor: Colors.white24,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFD4AF37)),
-                ),
-              ),
+              const SizedBox(width: 100, child: LinearProgressIndicator(
+                minHeight: 2, backgroundColor: Colors.white12, color: AppColors.gold,
+              )),
             ],
-          ),
-        ),
-      ),
-    );
-  }
+          )),
+        ));
+      })),
+    ),
+  );
 }
