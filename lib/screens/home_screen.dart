@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget heading(String title, VoidCallback onTap) => Padding(
-    padding: const EdgeInsets.only(top: 16, bottom: 8),
+    padding: const EdgeInsets.only(top: 12, bottom: 6),
     child: Row(children: [
       Container(width: 5, height: 22, decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(3))),
       const SizedBox(width: 10),
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: TextField(
                 controller: search,
                 onChanged: (v) => setState(() => query = v.trim()),
@@ -177,17 +177,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             if (query.isEmpty && categories.isNotEmpty) ...[
-              Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 6), child: heading('التصنيفات', () => open(const CategoriesScreen()))),
+              Padding(padding: const EdgeInsets.fromLTRB(16, 10, 16, 4), child: heading('التصنيفات', () => open(const CategoriesScreen()))),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: categories.map((c) => Expanded(child: InkWell(onTap: () => open(CategoriesScreen(category: c)), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4), child: Column(mainAxisSize: MainAxisSize.min, children: [
+                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: categories.map((c) => Expanded(child: InkWell(onTap: () => open(CategoriesScreen(category: c)), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2), child: Column(mainAxisSize: MainAxisSize.min, children: [
                   Container(width: 58, height: 58, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 12, offset: const Offset(0, 4))]), child: const Center(child: Icon(Icons.restaurant_menu, color: AppColors.brown))),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Text(c, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.darkBrown)),
                 ]))))).toList()),
               ),
             ],
-            Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 6), child: heading(query.isEmpty ? 'كل الوصفات' : 'نتائج البحث', () => open(const CategoriesScreen()))),
+            Padding(padding: const EdgeInsets.fromLTRB(16, 10, 16, 4), child: heading(query.isEmpty ? 'كل الوصفات' : 'نتائج البحث', () => open(const CategoriesScreen()))),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(children: [
