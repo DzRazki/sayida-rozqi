@@ -98,9 +98,9 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                 Text(recipe.description),
                 const SizedBox(height: 16),
                 Row(children: [
-                  Expanded(child: FilledButton.tonal(onPressed: () => react(true), icon: const Icon(Icons.thumb_up_outlined), label: Text('${stats.likes}'))),
+                  Expanded(child: FilledButton.tonalIcon(onPressed: () => react(true), icon: const Icon(Icons.thumb_up_outlined), label: Text('${stats.likes}'))),
                   const SizedBox(width: 8),
-                  Expanded(child: FilledButton.tonal(onPressed: () => react(false), icon: const Icon(Icons.thumb_down_outlined), label: Text('${stats.dislikes}'))),
+                  Expanded(child: FilledButton.tonalIcon(onPressed: () => react(false), icon: const Icon(Icons.thumb_down_outlined), label: Text('${stats.dislikes}'))),
                 ]),
                 const SizedBox(height: 18),
                 if (youtubeController != null) ...[
