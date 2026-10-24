@@ -72,7 +72,9 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
         }
       }
     }
-    if (mounted && Supabase.instance.client.auth.currentUser?.id == user.id) Navigator.of(context).pop(true);
+    if (mounted && Supabase.instance.client.auth.currentUser?.id == user.id) {
+      Navigator.of(context).pop(true);
+    }
   }
 
   Future<void> submit() async {
