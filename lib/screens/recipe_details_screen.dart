@@ -143,7 +143,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 300,
+            expandedHeight: MediaQuery.of(context).size.width * .75,
             pinned: true,
             backgroundColor: AppColors.darkBrown,
             actions: [
@@ -157,6 +157,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                   ? Container(color: AppColors.brown, child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 60))))
                   : Image.network(
                       recipe.imageUrl,
+                      width: double.infinity,
                       fit: BoxFit.cover,
                       filterQuality: FilterQuality.high,
                       gaplessPlayback: true,
@@ -171,16 +172,24 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(recipe.name, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _chip(recipe.category),
-                      _chip('${recipe.time} دقيقة'),
-                      _chip('${recipe.servings} أشخاص'),
-                      _chip(available ? '${stats.views} مشاهدة' : 'المشاهدات غير متاحة'),
-                    ],
+                  const SizedBox(height: 14),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 18, offset: const Offset(0, 6))],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _info(Icons.category, recipe.category),
+                        _info(Icons.timer, '${recipe.time} دقيقة'),
+                        _info(Icons.group, '${recipe.servings} أشخاص'),
+                        _info(Icons.visibility, available ? '${stats.views}' : '—'),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -260,9 +269,12 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     );
   }
 
-  Widget _chip(String text) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22), border: Border.all(color: AppColors.gold.withValues(alpha: .45))),
-    child: Text(text, style: const TextStyle(color: AppColors.darkBrown, fontWeight: FontWeight.w600)),
+  Widget _info(IconData icon, String text) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, color: AppColors.gold),
+      const SizedBox(height: 6),
+      Text(text, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.darkBrown, fontWeight: FontWeight.w600, fontSize: 12)),
+    ],
   );
 }
