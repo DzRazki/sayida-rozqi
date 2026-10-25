@@ -1,0 +1,16 @@
+name: Build signed Flutter APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  select-flutter-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require flutter-app workflow version
+        run: |
+          echo '::error::Run this workflow with ref flutter-app. The signed build implementation is on flutter-app; main is registration only.'
+          exit 1
