@@ -1,0 +1,71 @@
+name: Build signed Flutter APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require signing secrets
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -eu
+          for name in KEYSTORE STORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing signing secret: $name. No temporary key will be generated."
+              exit 1
+            fi
+          done
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Create Android platform
+        run: flutter create . --platforms=android --org dz.sayida --project-name sayida_rozqi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate launcher icons
+        run: |
+          python -m pip install 'Pillow==11.3.0'
+          python tools/generate_brand_icons.py
+      - run: flutter pub get
+      - run: flutter analyze
+      - name: Build release APK
+        run: flutter build apk --release --build-number "${{ github.run_number }}"
+      - name: Sign and verify APK
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          KS="$RUNNER_TEMP/sayida-signing.jks"
+          trap 'rm -f "$KS"' EXIT
+          printf '%s' "$KEYSTORE" | base64 --decode > "$KS"
+          APKSIGNER=$(find "$ANDROID_HOME" -type f -name apksigner | sort -V | tail -n 1)
+          test -n "$APKSIGNER"
+          mkdir -p signed-output
+          "$APKSIGNER" sign --ks "$KS" --ks-key-alias "$KEY_ALIAS" --ks-pass env:STORE_PASSWORD --key-pass env:KEY_PASSWORD --out signed-output/sayida-rozqi-signed.apk build/app/outputs/flutter-apk/app-release.apk
+          "$APKSIGNER" verify --verbose --print-certs signed-output/sayida-rozqi-signed.apk | tee signed-output/signing-certificate.txt
+      - name: Upload signed APK and public certificate fingerprints only
+        uses: actions/upload-artifact@v4
+        with:
+          name: sayida-rozqi-signed-${{ github.run_number }}
+          path: signed-output/
+          retention-days: 7
