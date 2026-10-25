@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -101,6 +102,7 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
       busy = true;
       message = null;
     });
+    var stage = 'google-account';
     try {
       final googleSignIn = GoogleSignIn(
         serverClientId: _googleWebClientId,
@@ -109,22 +111,40 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
       if (googleUser == null) {
         return;
       }
+      stage = 'google-token';
       final googleAuth = await googleUser.authentication;
       final idToken = googleAuth.idToken;
       if (idToken == null || idToken.isEmpty) {
-        throw StateError('Google did not return an ID token');
+        if (mounted) {
+          setState(() => message = 'لم ترجع Google رمز هوية. التشخيص: google-token / missing-id-token');
+        }
+        return;
       }
+      stage = 'supabase-token';
       await Supabase.instance.client.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
         accessToken: googleAuth.accessToken,
       );
+      stage = 'finish-sign-in';
       await finishSignIn();
+    } on PlatformException catch (error) {
+      final apiCode = RegExp(r'ApiException:\s*(\d+)').firstMatch(error.message ?? '')?.group(1);
+      const safeCodes = {'sign_in_failed', 'network_error', 'sign_in_canceled', 'sign_in_required'};
+      final code = safeCodes.contains(error.code) ? error.code : 'platform-error';
+      final diagnostic = apiCode == null ? code : '$code / api-$apiCode';
+      if (mounted) {
+        setState(() => message = 'تعذر إكمال دخول Google. التشخيص: $stage / $diagnostic');
+      }
+    } on AuthException catch (error) {
+      final status = error.statusCode;
+      final safeStatus = status != null && RegExp(r'^\d{3}$').hasMatch(status) ? status : 'unknown';
+      if (mounted) {
+        setState(() => message = 'تعذر إكمال المصادقة. التشخيص: $stage / auth-status-$safeStatus');
+      }
     } catch (_) {
       if (mounted) {
-        setState(() {
-          message = 'تعذر تسجيل الدخول باستخدام Google. تأكدي من اتصال الإنترنت وحاولي مجددًا.';
-        });
+        setState(() => message = 'تعذر إكمال الدخول. التشخيص: $stage / unexpected-error');
       }
     } finally {
       if (mounted) {
