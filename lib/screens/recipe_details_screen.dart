@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import '../models/recipe.dart';
 import '../services/favorites_service.dart';
 import '../services/recipe_stats_service.dart';
@@ -20,6 +21,7 @@ class RecipeDetailsScreen extends StatefulWidget {
 class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   bool favorite = false, busy = true, available = false;
   bool videoLoading = false, titleExpanded = false;
+  bool sharing = false;
   String? selected, error, videoError;
   RecipeStats stats = const RecipeStats(views: 0, likes: 0, dislikes: 0);
   WebViewController? video;
@@ -31,6 +33,27 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     loadFavorite();
     refresh(countView: true);
     if (widget.recipe.youtubeUrl.trim().isNotEmpty) prepareVideo();
+  }
+
+  Future<void> shareRecipe(BuildContext buttonContext) async {
+    if (sharing) return;
+    final recipe = widget.recipe;
+    final link = recipe.youtubeUrl.trim();
+    final uri = Uri.tryParse(link);
+    final host = uri?.host.toLowerCase() ?? '';
+    final validLink = uri?.scheme == 'https' && uri?.userInfo == '' &&
+        (host == 'youtu.be' || host == 'youtube.com' || host.endsWith('.youtube.com') || host == 'youtube-nocookie.com' || host.endsWith('.youtube-nocookie.com'));
+    final text = [recipe.name, 'من تطبيق السيدة رزقي', if (validLink) link].join('\n\n');
+    final box = buttonContext.findRenderObject() as RenderBox?;
+    final origin = box != null && box.hasSize ? box.localToGlobal(Offset.zero) & box.size : null;
+    setState(() => sharing = true);
+    try {
+      await Share.share(text, subject: recipe.name, sharePositionOrigin: origin);
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تعذر فتح المشاركة. حاولي مرة أخرى.')));
+    } finally {
+      if (mounted) setState(() => sharing = false);
+    }
   }
 
   Future<void> prepareVideo() async {
@@ -149,10 +172,33 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.darkBrown,
         foregroundColor: AppColors.gold,
-        actions: [IconButton(
-          onPressed: toggleFavorite,
-          icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: AppColors.gold),
-        )],
+        actions: [
+          Builder(builder: (buttonContext) => IconButton(
+            tooltip: 'مشاركة الوصفة',
+            onPressed: sharing ? null : () => shareRecipe(buttonContext),
+            style: IconButton.styleFrom(
+              foregroundColor: AppColors.gold,
+              disabledForegroundColor: AppColors.gold.withValues(alpha: .45),
+              backgroundColor: AppColors.gold.withValues(alpha: .12),
+              minimumSize: const Size(48, 48),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            icon: const Icon(Icons.share_outlined),
+          )),
+          const SizedBox(width: 6),
+          IconButton(
+            tooltip: favorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
+            onPressed: toggleFavorite,
+            style: IconButton.styleFrom(
+              foregroundColor: AppColors.gold,
+              backgroundColor: AppColors.gold.withValues(alpha: .12),
+              minimumSize: const Size(48, 48),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            icon: Icon(favorite ? Icons.favorite : Icons.favorite_border),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: ListView(
         padding: EdgeInsets.zero,
