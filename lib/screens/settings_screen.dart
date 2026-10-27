@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/supabase_service.dart';
 import '../theme.dart';
 import 'admin/admin_login_screen.dart';
 import 'admin/recipe_management_screen.dart';
 import 'user_auth_screen.dart';
+import 'account_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -14,6 +17,22 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool signingOut = false;
+  static const privacyUrl = 'https://doukara983-a11y.github.io/sayida-rozqi/privacy.html';
+  static const deletionUrl = 'https://doukara983-a11y.github.io/sayida-rozqi/delete-account.html';
+  static const supportEmail = 'midou4tv@gmail.com';
+
+  Future<void> openLink(String address) async {
+    try {
+      if (await launchUrl(Uri.parse(address), mode: LaunchMode.externalApplication)) return;
+    } catch (_) {}
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(address.startsWith('mailto:') ? 'تعذر فتح تطبيق البريد. يمكنك نسخ بريد الدعم.' : 'تعذر فتح الرابط. يمكنك نسخه وفتحه في المتصفح.'),
+      action: SnackBarAction(label: 'نسخ', onPressed: () async {
+        try { await Clipboard.setData(ClipboardData(text: address.startsWith('mailto:') ? supportEmail : address)); } catch (_) {}
+      }),
+    ));
+  }
 
   Future<void> signOut() async {
     if (signingOut) return;
@@ -74,8 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 children: [
                   Container(
-                    width: 84,
-                    height: 84,
+                    width: 84, height: 84,
                     decoration: BoxDecoration(color: AppColors.gold.withValues(alpha: .18), shape: BoxShape.circle),
                     child: const Center(child: Text('🍲', style: TextStyle(fontSize: 36))),
                   ),
@@ -99,7 +117,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: Icons.account_circle_outlined,
               title: 'حسابي',
               subtitle: user.email ?? 'حساب مسجّل',
-              trailing: const SizedBox.shrink(),
+              onTap: signingOut ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountScreen())),
             ),
             if (user != null) tile(
               icon: Icons.logout,
@@ -109,15 +127,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: signingOut ? null : signOut,
             ),
             tile(
+              icon: Icons.privacy_tip_outlined, title: 'سياسة الخصوصية',
+              subtitle: 'البيانات والخدمات الخارجية وحقوقك',
+              onTap: () => openLink(privacyUrl),
+            ),
+            tile(
+              icon: Icons.manage_accounts_outlined, title: 'طلب حذف الحساب والبيانات',
+              subtitle: 'طريقة الحذف من التطبيق أو عبر الدعم',
+              onTap: () => openLink(deletionUrl),
+            ),
+            tile(
+              icon: Icons.support_agent, title: 'الدعم والتواصل',
+              subtitle: supportEmail, onTap: () => openLink('mailto:$supportEmail'),
+            ),
+            tile(
               icon: Icons.admin_panel_settings,
               title: 'منطقة الإدارة',
               subtitle: 'إدارة الوصفات والإحصائيات',
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SupabaseService.isAdmin() ? const RecipeManagementScreen() : const AdminLoginScreen())),
             ),
             tile(
-              icon: Icons.info_outline,
-              title: 'حول التطبيق',
-              subtitle: 'تطبيق وصفات جزائرية أصيلة',
+              icon: Icons.info_outline, title: 'حول التطبيق',
+              subtitle: 'تطبيق وصفات جزائرية أصيلة — المطوّر: NY SIG CITY',
               trailing: const SizedBox.shrink(),
             ),
           ],
