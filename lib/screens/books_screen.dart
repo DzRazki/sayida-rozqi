@@ -56,8 +56,8 @@ class _BooksScreenState extends State<BooksScreen> {
   }
   Widget cover(Map<String, dynamic> book) {
     final url = book['cover_url'] as String? ?? '';
-    const fallback = Center(child: Icon(Icons.menu_book, size: 64, color: AppColors.gold));
-    return AspectRatio(aspectRatio: .72, child: ClipRRect(borderRadius: BorderRadius.circular(12),
+    const fallback = Center(child: Icon(Icons.menu_book, size: 40, color: AppColors.gold));
+    return AspectRatio(aspectRatio: .72, child: ClipRRect(borderRadius: BorderRadius.circular(8),
       child: url.isEmpty ? fallback : Image.network(url, fit: BoxFit.cover, errorBuilder: (_, __, ___) => fallback)));
   }
   @override
@@ -82,19 +82,28 @@ class _BooksScreenState extends State<BooksScreen> {
       if (error != null) Center(child: Text(error!)),
       if (!loading && error == null && books.isEmpty) const Padding(padding: EdgeInsets.all(28), child: Text('ستظهر الكتب هنا بعد إضافتها ونشرها من الإدارة.', textAlign: TextAlign.center)),
       LayoutBuilder(builder: (context, constraints) {
-        final count = constraints.maxWidth >= 480 ? 3 : 2;
-        final width = (constraints.maxWidth - (count - 1) * 10) / count;
-        return Wrap(spacing: 10, runSpacing: 12, children: books.map((book) => SizedBox(width: width, child: Card(
-          margin: EdgeInsets.zero, color: Colors.white, child: Padding(padding: const EdgeInsets.all(10), child: Column(children: [
-            cover(book), const SizedBox(height: 10),
-            Text(book['title'] as String, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6), Text(book['description'] as String? ?? '', maxLines: 3, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            FilledButton(onPressed: busy ? null : () => openBook(book, false), child: const Text('قراءة الكتاب')),
-            TextButton.icon(onPressed: busy ? null : () => openBook(book, true), icon: const Icon(Icons.download, size: 18), label: const Text('تحميل PDF')),
+        final largeText = MediaQuery.textScalerOf(context).scale(12) > 16;
+        final count = constraints.maxWidth < 270 || largeText ? 2 : constraints.maxWidth >= 720 ? 4 : 3;
+        final width = (constraints.maxWidth - (count - 1) * 8) / count;
+        return Wrap(spacing: 8, runSpacing: 10, children: books.map((book) => SizedBox(width: width, child: Card(
+          margin: EdgeInsets.zero, color: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(padding: const EdgeInsets.all(6), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            cover(book), const SizedBox(height: 6),
+            Text(book['title'] as String, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 11, height: 1.3, fontWeight: FontWeight.bold, color: AppColors.darkBrown)),
+            const SizedBox(height: 4), Text(book['description'] as String? ?? '', maxLines: 2, overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, height: 1.3, color: AppColors.brown)),
+            const SizedBox(height: 4),
+            FilledButton(style: FilledButton.styleFrom(minimumSize: const Size(0, 32), padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
+              backgroundColor: AppColors.gold, foregroundColor: AppColors.darkBrown, textStyle: const TextStyle(fontSize: 10)),
+              onPressed: busy ? null : () => openBook(book, false), child: const Text('قراءة الكتاب', textAlign: TextAlign.center)),
+            TextButton(style: TextButton.styleFrom(minimumSize: const Size(0, 32), padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+              foregroundColor: AppColors.brown, textStyle: const TextStyle(fontSize: 10)),
+              onPressed: busy ? null : () => openBook(book, true), child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Icon(Icons.download, size: 14), SizedBox(width: 3), Flexible(child: Text('تحميل PDF', textAlign: TextAlign.center))])),
             FutureBuilder<Map<String, int>>(future: BooksService.stats(book['id'] as String), builder: (context, snapshot) {
-              if (!snapshot.hasData) return const Text('الإحصاءات: —', style: TextStyle(fontSize: 11));
-              return Text('مشاهدات: ${snapshot.data!['views']} · تحميلات: ${snapshot.data!['downloads']}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 11));
+              if (!snapshot.hasData) return const Text('الإحصاءات: —', textAlign: TextAlign.center, style: TextStyle(fontSize: 9));
+              return Text('مشاهدات: ${snapshot.data!['views']}\nتحميلات: ${snapshot.data!['downloads']}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 9, height: 1.3));
             }),
           ])),
         ))).toList());
