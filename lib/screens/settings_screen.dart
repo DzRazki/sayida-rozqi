@@ -15,8 +15,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool signingOut = false;
-  static const privacyUrl = 'https://doukara983-a11y.github.io/sayida-rozqi/privacy.html';
-  static const deletionUrl = 'https://doukara983-a11y.github.io/sayida-rozqi/delete-account.html';
+  static const privacyUrl = 'https://dzrazki.github.io/sayida-rozqi/privacy.html';
+  static const deletionUrl = 'https://dzrazki.github.io/sayida-rozqi/delete-account.html';
   static const supportEmail = 'midou4tv@gmail.com';
 
   Future<void> openLink(String address) async {
