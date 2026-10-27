@@ -34,7 +34,7 @@ class BooksService {
 
   static void _checkPdf(Uint8List bytes) {
     if (bytes.length < 5 || String.fromCharCodes(bytes.take(5)) != '%PDF-') {
-      throw FormatException('الملف ليس PDF صالحًا');
+      throw const FormatException('الملف ليس PDF صالحًا');
     }
     if (bytes.length > 104857600) throw StateError('حجم الكتاب أكبر من 100 ميغابايت');
   }
