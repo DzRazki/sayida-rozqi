@@ -16,7 +16,7 @@ dependencies:
   google_sign_in: ^6.2.1
   share_plus: ^10.1.4
   pdfx: ^2.9.2
-  file_picker: ^8.1.7
+  file_picker: 10.3.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
