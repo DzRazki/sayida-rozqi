@@ -12,6 +12,7 @@ import 'recipe_details_screen.dart';
 import 'youtube_channel_screen.dart';
 import 'account_screen.dart';
 import 'settings_screen.dart';
+import 'books_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -65,11 +66,13 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: Drawer(child: SafeArea(child: ListView(children: [
         const Padding(padding: EdgeInsets.all(22), child: Text('السيدة رزقي', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.darkBrown))),
         ListTile(leading: const Icon(Icons.home_outlined), title: const Text('الرئيسية'), onTap: () => Navigator.pop(context)),
+        ListTile(leading: const Icon(Icons.menu_book_outlined), title: const Text('الكتب'), onTap: () { Navigator.pop(context); open(const BooksScreen()); }),
         ListTile(leading: const Icon(Icons.category_outlined), title: const Text('التصنيفات'), onTap: () { Navigator.pop(context); open(const CategoriesScreen()); }),
         ListTile(leading: const Icon(Icons.favorite_border), title: const Text('المفضلة'), onTap: () { Navigator.pop(context); open(const FavoritesScreen()); }),
         ListTile(leading: const Icon(Icons.play_circle_outline), title: const Text('القناة'), onTap: () { Navigator.pop(context); open(const YouTubeChannelScreen()); }),
         ListTile(leading: const Icon(Icons.notifications_none), title: const Text('الإشعارات'), onTap: () { Navigator.pop(context); open(const NotificationsScreen()); }),
         ListTile(leading: const Icon(Icons.settings_outlined), title: const Text('الإعدادات'), onTap: () { Navigator.pop(context); open(const SettingsScreen()); }),
+        if (SupabaseService.isAdmin()) ListTile(leading: const Icon(Icons.library_books), title: const Text('إدارة الكتب'), onTap: () { Navigator.pop(context); open(const BookManagementScreen()); }),
       ]))),
       appBar: AppBar(
         backgroundColor: AppColors.darkBrown, foregroundColor: Colors.white,
@@ -138,12 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: NavigationBar(
         backgroundColor: Colors.white, indicatorColor: AppColors.gold.withValues(alpha: .22), selectedIndex: 0,
         onDestinationSelected: (index) {
-          if (index == 1) open(const YouTubeChannelScreen());
-          if (index == 2) open(const FavoritesScreen());
-          if (index == 3) open(const AccountScreen());
+          if (index == 1) open(const BooksScreen());
+          if (index == 2) open(const YouTubeChannelScreen());
+          if (index == 3) open(const FavoritesScreen());
+          if (index == 4) open(const AccountScreen());
         },
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'الرئيسية'),
+          NavigationDestination(icon: Icon(Icons.menu_book_outlined), label: 'الكتب'),
           NavigationDestination(icon: Icon(Icons.play_circle_outline), label: 'القناة'),
           NavigationDestination(icon: Icon(Icons.favorite_border), label: 'المفضلة'),
           NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'حسابي'),
