@@ -94,16 +94,18 @@ class _BooksScreenState extends State<BooksScreen> {
             const SizedBox(height: 4), Text(book['description'] as String? ?? '', maxLines: 2, overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, height: 1.3, color: AppColors.brown)),
             const SizedBox(height: 4),
-            FilledButton(style: FilledButton.styleFrom(minimumSize: const Size(0, 32), padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
+            FilledButton(style: FilledButton.styleFrom(minimumSize: const Size(0, 30), padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap, visualDensity: VisualDensity.compact,
               backgroundColor: AppColors.gold, foregroundColor: AppColors.darkBrown, textStyle: const TextStyle(fontSize: 10)),
               onPressed: busy ? null : () => openBook(book, false), child: const Text('قراءة الكتاب', textAlign: TextAlign.center)),
-            TextButton(style: TextButton.styleFrom(minimumSize: const Size(0, 32), padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+            TextButton(style: TextButton.styleFrom(minimumSize: const Size(0, 26), padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap, visualDensity: VisualDensity.compact,
               foregroundColor: AppColors.brown, textStyle: const TextStyle(fontSize: 10)),
               onPressed: busy ? null : () => openBook(book, true), child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Icon(Icons.download, size: 14), SizedBox(width: 3), Flexible(child: Text('تحميل PDF', textAlign: TextAlign.center))])),
             FutureBuilder<Map<String, int>>(future: BooksService.stats(book['id'] as String), builder: (context, snapshot) {
-              if (!snapshot.hasData) return const Text('الإحصاءات: —', textAlign: TextAlign.center, style: TextStyle(fontSize: 9));
-              return Text('مشاهدات: ${snapshot.data!['views']}\nتحميلات: ${snapshot.data!['downloads']}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 9, height: 1.3));
+              if (!snapshot.hasData) return const Text('الإحصاءات: —', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, height: 1.15));
+              return Text('مشاهدات: ${snapshot.data!['views']}\nتحميلات: ${snapshot.data!['downloads']}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 9, height: 1.15));
             }),
           ])),
         ))).toList());
