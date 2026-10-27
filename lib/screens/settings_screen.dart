@@ -140,7 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             tile(
               icon: Icons.info_outline, title: 'حول التطبيق',
-              subtitle: 'تطبيق وصفات جزائرية أصيلة — المطوّر: NY SIG CITY',
+              subtitle: 'تطبيق وصفات جزائرية أصيلة — المطوّر: DZ.MB',
               trailing: const SizedBox.shrink(),
             ),
           ],
