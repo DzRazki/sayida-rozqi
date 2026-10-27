@@ -4,8 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/supabase_service.dart';
 import '../theme.dart';
-import 'admin/admin_login_screen.dart';
-import 'admin/recipe_management_screen.dart';
 import 'user_auth_screen.dart';
 import 'account_screen.dart';
 
@@ -139,12 +137,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             tile(
               icon: Icons.support_agent, title: 'الدعم والتواصل',
               subtitle: supportEmail, onTap: () => openLink('mailto:$supportEmail'),
-            ),
-            tile(
-              icon: Icons.admin_panel_settings,
-              title: 'منطقة الإدارة',
-              subtitle: 'إدارة الوصفات والإحصائيات',
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SupabaseService.isAdmin() ? const RecipeManagementScreen() : const AdminLoginScreen())),
             ),
             tile(
               icon: Icons.info_outline, title: 'حول التطبيق',
