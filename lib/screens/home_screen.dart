@@ -11,6 +11,7 @@ import 'notifications_screen.dart';
 import 'recipe_details_screen.dart';
 import 'youtube_channel_screen.dart';
 import 'account_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ListTile(leading: const Icon(Icons.favorite_border), title: const Text('المفضلة'), onTap: () { Navigator.pop(context); open(const FavoritesScreen()); }),
         ListTile(leading: const Icon(Icons.play_circle_outline), title: const Text('القناة'), onTap: () { Navigator.pop(context); open(const YouTubeChannelScreen()); }),
         ListTile(leading: const Icon(Icons.notifications_none), title: const Text('الإشعارات'), onTap: () { Navigator.pop(context); open(const NotificationsScreen()); }),
+        ListTile(leading: const Icon(Icons.settings_outlined), title: const Text('الإعدادات'), onTap: () { Navigator.pop(context); open(const SettingsScreen()); }),
       ]))),
       appBar: AppBar(
         backgroundColor: AppColors.darkBrown, foregroundColor: Colors.white,
