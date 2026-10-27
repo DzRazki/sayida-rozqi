@@ -29,6 +29,28 @@ jobs:
       - name: Create Android platform
         run: flutter create . --platforms=android --org dz.sayida --project-name sayida_rozqi
 
+      - name: Align file_picker JVM targets
+        shell: bash
+        run: |
+          mkdir -p "${GRADLE_USER_HOME:-$HOME/.gradle}/init.d"
+          cat > "${GRADLE_USER_HOME:-$HOME/.gradle}/init.d/file-picker-jvm.gradle" <<'GRADLE'
+          gradle.beforeProject { p ->
+              if (p.name == 'file_picker') {
+                  p.afterEvaluate {
+                      p.tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach { t ->
+                          t.sourceCompatibility = '11'
+                          t.targetCompatibility = '11'
+                      }
+                      p.tasks.configureEach { t ->
+                          if (t.name.startsWith('compile') && t.name.endsWith('Kotlin') && t.hasProperty('kotlinOptions')) {
+                              t.kotlinOptions.jvmTarget = '11'
+                          }
+                      }
+                  }
+              }
+          }
+          GRADLE
+
       - name: Set up Python for launcher icons
         uses: actions/setup-python@v5
         with:
