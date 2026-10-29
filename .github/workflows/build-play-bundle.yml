@@ -3,9 +3,15 @@ on:
   workflow_dispatch:
     inputs:
       version_code:
-        description: 'Unique integer greater than all previously uploaded version codes'
-        required: true
+        description: 'Unique integer greater than all previously uploaded version codes (leave empty to use the build number in pubspec.yaml)'
+        required: false
         type: string
+  push:
+    branches: [flutter-app]
+    paths:
+      - 'lib/**'
+      - 'pubspec.yaml'
+      - 'tools/configure_play_signing.py'
 permissions:
   contents: read
 jobs:
@@ -16,7 +22,7 @@ jobs:
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
       ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
       ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-      VERSION_CODE: ${{ inputs.version_code }}
+      INPUT_VERSION_CODE: ${{ inputs.version_code }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -36,10 +42,20 @@ jobs:
           for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
             test -n "${!name}" || { echo "::error::Missing $name"; exit 1; }
           done
-          python -c 'import os; v=os.environ["VERSION_CODE"]; assert v.isascii() and v.isdigit() and 0 < int(v) <= 2100000000, "Invalid version code"'
+      - name: Resolve version code
+        shell: bash
+        run: |
+          set -euo pipefail
+          v="${INPUT_VERSION_CODE:-}"
+          if [ -z "$v" ]; then
+            v=$(python -c "import re,pathlib;t=pathlib.Path('pubspec.yaml').read_text();m=re.search(r'version:\s*[^+]+\+(\d+)',t);print(m.group(1) if m else '')")
+          fi
+          python -c "import os,sys; v=os.environ['V'] or ''; sys.exit(0 if v.isascii() and v.isdigit() and 0 < int(v) <= 2100000000 else 1)" V="$v" || { echo '::error::Invalid or missing version code. Add +N to version in pubspec.yaml or pass version_code.'; exit 1; }
+          echo "VERSION_CODE=$v" >> "$GITHUB_ENV"
+          echo "Using version code $v"
       - name: Create Android platform
         run: flutter create . --platforms=android --org dz.sayida --project-name sayida_rozqi
-      - name: Configure release signing
+      - name: Configure release signing and API level
         run: python tools/configure_play_signing.py
       - name: Generate icons
         run: |
@@ -60,7 +76,7 @@ jobs:
           keytool -printcert -jarfile play-output/sayida-rozqi.aab > play-output/signing-certificate.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: sayida-rozqi-play-${{ inputs.version_code }}
+          name: sayida-rozqi-play-${{ env.VERSION_CODE }}
           path: play-output/
           retention-days: 7
       - name: Remove temporary key
