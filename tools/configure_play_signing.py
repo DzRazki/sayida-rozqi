@@ -9,6 +9,16 @@ text = path.read_text()
 old = 'signingConfig = signingConfigs.getByName("debug")'
 if text.count(old) != 1 or text.count('    buildTypes {') != 1:
     raise SystemExit('Unexpected Gradle layout; no changes made.')
+
+for source, replacement in (
+    ('targetSdk = flutter.targetSdkVersion', 'targetSdk = 36'),
+    ('compileSdk = flutter.compileSdkVersion', 'compileSdk = 36'),
+):
+    if source in text:
+        text = text.replace(source, replacement, 1)
+if 'targetSdk = 36' not in text:
+    raise SystemExit('Could not pin targetSdk to 36; Play would reject the bundle.')
+
 key = Path(os.environ['RUNNER_TEMP']) / 'sayida-play-upload.jks'
 key.write_bytes(base64.b64decode(os.environ['ANDROID_KEYSTORE_BASE64'], validate=True))
 key.chmod(0o600)
