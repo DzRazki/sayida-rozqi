@@ -48,7 +48,7 @@ jobs:
           PY
       - name: Create Android platform
         run: flutter create . --platforms=android --org dz.sayida --project-name sayida_rozqi
-      - name: Grant internet permission to release builds
+      - name: Configure release manifest for network and OAuth deep link
         shell: bash
         run: |
           set -euo pipefail
@@ -56,14 +56,25 @@ jobs:
           from pathlib import Path
           manifest_path = Path('android/app/src/main/AndroidManifest.xml')
           manifest = manifest_path.read_text()
-          permission = '    <uses-permission android:name="android.permission.INTERNET"/>\n'
           if 'android.permission.INTERNET' not in manifest:
               if '<application' not in manifest:
                   raise SystemExit('Unexpected AndroidManifest layout')
+              permission = '    <uses-permission android:name="android.permission.INTERNET"/>\n'
               manifest = manifest.replace('<application', permission + '<application', 1)
-              manifest_path.write_text(manifest)
-          if 'android.permission.INTERNET' not in manifest_path.read_text():
-              raise SystemExit('INTERNET permission missing from release manifest')
+          if 'login-callback' not in manifest:
+              if manifest.count('</activity>') != 1:
+                  raise SystemExit('Unexpected activity layout in AndroidManifest')
+              intent = ('\n            <intent-filter>\n'
+                        '                <action android:name="android.intent.action.VIEW"/>\n'
+                        '                <category android:name="android.intent.category.DEFAULT"/>\n'
+                        '                <category android:name="android.intent.category.BROWSABLE"/>\n'
+                        '                <data android:scheme="dz.sayida.sayida_rozqi" android:host="login-callback"/>\n'
+                        '            </intent-filter>\n        ')
+              manifest = manifest.replace('</activity>', intent + '</activity>', 1)
+          manifest_path.write_text(manifest)
+          patched = manifest_path.read_text()
+          if 'android.permission.INTERNET' not in patched or 'login-callback' not in patched:
+              raise SystemExit('Release manifest is missing required entries')
           PY
       - name: Configure release signing and API level
         run: python tools/configure_play_signing.py

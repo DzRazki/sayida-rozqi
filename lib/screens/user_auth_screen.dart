@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,6 +15,7 @@ class UserAuthScreen extends StatefulWidget {
 class _UserAuthScreenState extends State<UserAuthScreen> {
   static const _googleWebClientId =
       '727229417562-vo4rkvh6vj6n83mkq1q5mr4mojlhdjjr.apps.googleusercontent.com';
+  static const _oauthRedirect = 'dz.sayida.sayida_rozqi://login-callback';
 
   final email = TextEditingController();
   final password = TextEditingController();
@@ -21,9 +23,21 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
   bool register = false;
   bool busy = false;
   String? message;
+  StreamSubscription<AuthState>? _authSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((state) {
+      if (state.event == AuthChangeEvent.signedIn && mounted && !busy) {
+        finishSignIn();
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _authSub?.cancel();
     email.dispose();
     password.dispose();
     super.dispose();
@@ -94,6 +108,23 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
     }
   }
 
+  Future<void> _signInWithBrowser(String diagnostic) async {
+    if (mounted) {
+      setState(() => message = 'جارٍ فتح Google في المتصفح لإكمال الدخول… ($diagnostic)');
+    }
+    try {
+      await Supabase.instance.client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: _oauthRedirect,
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      if (mounted) {
+        setState(() => message = 'تعذر إكمال دخول Google. التشخيص: google-account / $diagnostic');
+      }
+    }
+  }
+
   Future<void> signInWithGoogle() async {
     if (busy) {
       return;
@@ -133,9 +164,14 @@ class _UserAuthScreenState extends State<UserAuthScreen> {
       const safeCodes = {'sign_in_failed', 'network_error', 'sign_in_canceled', 'sign_in_required'};
       final code = safeCodes.contains(error.code) ? error.code : 'platform-error';
       final diagnostic = apiCode == null ? code : '$code / api-$apiCode';
-      if (mounted) {
-        setState(() => message = 'تعذر إكمال دخول Google. التشخيص: $stage / $diagnostic');
+      debugPrint('google-signin code=${error.code} details=${error.details} message=${error.message}');
+      if (code == 'sign_in_canceled') {
+        if (mounted) {
+          setState(() => message = null);
+        }
+        return;
       }
+      await _signInWithBrowser(diagnostic);
     } on AuthException catch (error) {
       final status = error.statusCode;
       final safeStatus = status != null && RegExp(r'^\d{3}$').hasMatch(status) ? status : 'unknown';
