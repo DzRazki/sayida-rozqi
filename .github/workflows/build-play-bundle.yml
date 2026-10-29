@@ -48,6 +48,23 @@ jobs:
           PY
       - name: Create Android platform
         run: flutter create . --platforms=android --org dz.sayida --project-name sayida_rozqi
+      - name: Grant internet permission to release builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          manifest_path = Path('android/app/src/main/AndroidManifest.xml')
+          manifest = manifest_path.read_text()
+          permission = '    <uses-permission android:name="android.permission.INTERNET"/>\n'
+          if 'android.permission.INTERNET' not in manifest:
+              if '<application' not in manifest:
+                  raise SystemExit('Unexpected AndroidManifest layout')
+              manifest = manifest.replace('<application', permission + '<application', 1)
+              manifest_path.write_text(manifest)
+          if 'android.permission.INTERNET' not in manifest_path.read_text():
+              raise SystemExit('INTERNET permission missing from release manifest')
+          PY
       - name: Configure release signing and API level
         run: python tools/configure_play_signing.py
       - name: Align file_picker JVM targets
