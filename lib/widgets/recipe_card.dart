@@ -55,6 +55,10 @@ class _RecipeCardState extends State<RecipeCard> {
   @override
   Widget build(BuildContext context) {
     final recipe = widget.recipe;
+    final decodeWidth = (MediaQuery.sizeOf(context).width *
+            MediaQuery.devicePixelRatioOf(context) /
+            2)
+        .round();
 
     return GestureDetector(
       onTap: () async {
@@ -103,6 +107,7 @@ class _RecipeCardState extends State<RecipeCard> {
                         height: double.infinity,
                         fit: BoxFit.cover,
                         alignment: Alignment.center,
+                        cacheWidth: decodeWidth > 0 ? decodeWidth : null,
                         filterQuality: FilterQuality.medium,
                         gaplessPlayback: true,
                         errorBuilder: (_, __, ___) => Container(

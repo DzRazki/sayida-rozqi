@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/splash_screen.dart';
@@ -6,6 +7,13 @@ import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
   await Supabase.initialize(
     url: 'https://vyiywiteeqkyuroqftkn.supabase.co',
     publishableKey: 'sb_publishable_4kzJ5yc7xLUPXBYoe2V0iQ_YyKEDiDp',
@@ -25,10 +33,22 @@ class SayidaRozqiApp extends StatelessWidget {
     theme: AppTheme.light,
     builder: (context, child) => Directionality(
       textDirection: TextDirection.rtl,
-      child: ColoredBox(color: AppColors.cream, child: SafeArea(
-        top: false, left: false, right: false,
-        child: child ?? const SizedBox.shrink(),
-      )),
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
+        child: ColoredBox(
+          color: AppColors.cream,
+          child: SafeArea(
+            left: false,
+            right: false,
+            child: child ?? const SizedBox.shrink(),
+          ),
+        ),
+      ),
     ),
     home: SplashScreen(showWelcome: showWelcome),
   );
