@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 import '../services/books_service.dart';
 import '../services/supabase_service.dart';
@@ -47,8 +49,12 @@ class _BooksScreenState extends State<BooksScreen> {
         try { await BooksService.recordSuccess(book['id'] as String, download: true); }
         catch (_) { message('حُفظ الكتاب، لكن تعذر تحديث الإحصاء'); }
       } else {
+        final dir = await getTemporaryDirectory();
+        final file = File('${dir.path}/book-${book['id']}.pdf');
+        await file.writeAsBytes(bytes, flush: true);
+        if (!mounted) return;
         await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => BookReaderScreen(
-          bookId: book['id'] as String, title: book['title'] as String, bytes: bytes)));
+          bookId: book['id'] as String, title: book['title'] as String, path: file.path)));
       }
       if (mounted) setState(() {});
     } catch (_) { message('تعذر فتح الكتاب أو حفظه. تحققي من الاتصال وحاولي مجددًا.'); }
@@ -58,7 +64,7 @@ class _BooksScreenState extends State<BooksScreen> {
     final url = book['cover_url'] as String? ?? '';
     const fallback = Center(child: Icon(Icons.menu_book, size: 40, color: AppColors.gold));
     return AspectRatio(aspectRatio: .72, child: ClipRRect(borderRadius: BorderRadius.circular(8),
-      child: url.isEmpty ? fallback : Image.network(url, fit: BoxFit.cover, errorBuilder: (_, __, ___) => fallback)));
+      child: url.isEmpty ? fallback : Image.network(url, fit: BoxFit.cover, cacheWidth: 480, errorBuilder: (_, __, ___) => fallback)));
   }
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -116,9 +122,8 @@ class _BooksScreenState extends State<BooksScreen> {
 }
 
 class BookReaderScreen extends StatefulWidget {
-  final String bookId, title;
-  final Uint8List bytes;
-  const BookReaderScreen({super.key, required this.bookId, required this.title, required this.bytes});
+  final String bookId, title, path;
+  const BookReaderScreen({super.key, required this.bookId, required this.title, required this.path});
   @override
   State<BookReaderScreen> createState() => _BookReaderScreenState();
 }
@@ -126,9 +131,13 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
   late final PdfControllerPinch controller;
   bool recorded = false;
   @override
-  void initState() { super.initState(); controller = PdfControllerPinch(document: PdfDocument.openData(widget.bytes)); }
+  void initState() { super.initState(); controller = PdfControllerPinch(document: PdfDocument.openFile(widget.path)); }
   @override
-  void dispose() { controller.dispose(); super.dispose(); }
+  void dispose() {
+    controller.dispose();
+    File(widget.path).delete().ignore();
+    super.dispose();
+  }
   Future<void> record() async {
     if (recorded) return;
     recorded = true;

@@ -167,6 +167,9 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final recipe = widget.recipe;
+    final decodeWidth = (MediaQuery.sizeOf(context).width *
+            MediaQuery.devicePixelRatioOf(context))
+        .round();
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
@@ -208,6 +211,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
               recipe.imageUrl,
               width: double.infinity,
               fit: BoxFit.contain,
+              cacheWidth: decodeWidth > 0 ? decodeWidth : null,
               filterQuality: FilterQuality.high,
               gaplessPlayback: true,
               errorBuilder: (_, __, ___) => const SizedBox(
