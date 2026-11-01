@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [flutter-app]
+    paths:
+      - '.github/workflows/build-signed-apk.yml'
 
 permissions:
   contents: read
